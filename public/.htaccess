@@ -1,0 +1,6 @@
+# Redirige todas las peticiones que no sean archivos o directorios existentes a index.php
+# Permite implementar URLs amigables sin mostrar index.php en la URL
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
