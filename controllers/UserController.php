@@ -14,8 +14,11 @@ class UserController
     // Muestra el formulario de login
     public function login($errors = [], $old = [])
     {
-        // Puedes pasar $errors y $old para mostrar mensajes y valores previos
+        $pageTitle = 'Login';
+        ob_start();
         include __DIR__ . '/../views/users/login.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../views/layouts/main.php';
     }
 
     // Procesa el formulario de login
@@ -61,7 +64,11 @@ class UserController
     // Muestra el formulario de registro
     public function register($errors = [], $old = [])
     {
+        $pageTitle = 'Registro';
+        ob_start();
         include __DIR__ . '/../views/users/register.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../views/layouts/main.php';
     }
 
     // Procesa el formulario de registro y guarda el usuario
