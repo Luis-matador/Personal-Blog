@@ -7,14 +7,18 @@ class Post
     public $content;
     public $user_id;
     public $created_at;
+    public $image;
+    public $summary;
 
     public function __construct($data = [])
     {
-        $this->id         = $data['id'] ?? null;
-        $this->title      = $data['title'] ?? null;
-        $this->content    = $data['content'] ?? null;
-        $this->user_id    = $data['user_id'] ?? null;
-        $this->created_at = $data['created_at'] ?? null;
+    $this->id         = $data['id'] ?? null;
+    $this->title      = $data['title'] ?? null;
+    $this->content    = $data['content'] ?? null;
+    $this->user_id    = $data['user_id'] ?? null;
+    $this->created_at = $data['created_at'] ?? null;
+    $this->image      = $data['image'] ?? null;
+    $this->summary    = $data['summary'] ?? null;
     }
 
     public static function getAll()
@@ -40,11 +44,13 @@ class Post
     public static function create($data)
     {
         require __DIR__ . '/../config/database.php';
-        $stmt = $db->prepare("INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO posts (title, content, user_id, image, summary) VALUES (?, ?, ?, ?, ?)");
         $result = $stmt->execute([
             $data['title'],
             $data['content'],
-            $data['user_id']
+            $data['user_id'],
+            $data['image'] ?? null,
+            $data['summary'] ?? null
         ]);
         if ($result) {
             $id = $db->lastInsertId();

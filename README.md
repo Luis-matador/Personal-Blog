@@ -1,4 +1,59 @@
-# Blog Personal PHP - Proyecto Educativo
+## 📋 Estado actual y checklist
+
+### Implementado
+- [x] Sistema de autenticación (registro/login/logout)
+- [x] CRUD de posts (controlador y modelo)
+- [x] Enrutamiento amigable y seguro
+- [x] Mensajes flash con SweetAlert2
+- [x] Protección de rutas por login
+- [x] Validación de formularios en el servidor
+- [x] Estructura MVC y uso de PDO/password_hash
+- [x] El usuario puede eliminar sus propios posts (desde el controlador, falta vista/botón)
+
+### Pendiente o mejoras sugeridas
+- [ ] Vistas de crear/editar posts (`views/posts/create.php`, `edit.php`)
+- [ ] Botón y confirmación visual para eliminar posts desde la interfaz
+- [ ] Paginación en el listado de posts
+- [ ] Protección de rutas por rol y panel de administración
+- [ ] Validación de formularios en el cliente (JS)
+- [ ] Subida de imágenes/archivos para posts (obligatorio para el enunciado)
+- [ ] Sistema de comentarios, categorías, etiquetas
+- [ ] Editor WYSIWYG para posts
+- [ ] API REST, búsqueda, compartir en redes
+- [ ] Tests automatizados
+
+---
+
+## 🚩 Pasos mínimos para cumplir el enunciado
+
+1. **Vistas de crear/editar posts**: Implementa los formularios y vistas para crear y editar publicaciones.
+2. **Subida y gestión de archivos**: Permite subir imágenes para los posts usando un campo `<input type="file">`, procesa el archivo con `$_FILES`, valida tipo/tamaño y guarda la ruta en la base de datos.
+3. **Validación en el cliente (JS)**: Añade validación básica en los formularios usando JavaScript.
+4. **Botón eliminar en la interfaz**: Añade el botón y confirmación visual para eliminar posts desde la vista.
+
+---
+
+## 📝 Guía rápida para la subida de imágenes
+
+- Añade un campo `image` en la tabla de posts (puede ser VARCHAR para la ruta).
+- En el formulario de crear/editar post, añade `<input type="file" name="image">`.
+- En el controlador, procesa `$_FILES['image']`, valida tipo/tamaño, mueve el archivo a `/public/uploads/` y guarda la ruta en la BD.
+- Muestra la imagen en la vista del post si existe.
+- Asegúrate de validar y sanear el nombre del archivo y restringir los tipos permitidos (jpg, png, etc).
+
+---
+
+## 🛠️ Recursos útiles
+- [Documentación oficial de PHP sobre subida de archivos](https://www.php.net/manual/es/features.file-upload.php)
+- [Validación de archivos en PHP](https://www.php.net/manual/es/function.move-uploaded-file.php)
+- [Ejemplo de formulario de subida de imagen](https://www.w3schools.com/php/php_file_upload.asp)
+
+---
+
+## 💡 Siguiente paso recomendado
+Implementa la subida de imágenes en los posts para cumplir el enunciado y tener un CMS funcional y completo.
+
+---
 
 ## 📝 Descripción
 
@@ -57,16 +112,33 @@ blog-personal/
 └── README.md              # Documentación del proyecto
 ```
 
-## ✨ Características del Blog
+## ✨ Estado de las Características
 
-- **Sistema de Autenticación**: Registro e inicio de sesión de usuarios
-- **Gestión de Posts**: Crear, leer, actualizar y eliminar posts (CRUD)
-- **URLs Amigables**: Sistema de rutas que permite URLs como `/post/titulo-del-post`
-- **Protección de Rutas**: Acceso restringido a funcionalidades según el rol del usuario
-- **Interfaz Responsive**: Diseño adaptable a diferentes dispositivos
-- **Validación de Formularios**: Tanto del lado del cliente como del servidor
-- **Mensajes Flash**: Notificaciones temporales para informar al usuario
-- **Paginación**: Para navegar entre múltiples posts
+### Implementado
+- [x] Sistema de Autenticación: Registro e inicio de sesión de usuarios
+- [x] Gestión de Posts: Crear, leer, actualizar y eliminar posts (CRUD) *(faltan vistas de crear/editar)*
+- [x] URLs Amigables: Sistema de rutas que permite URLs como `/post/titulo-del-post`
+- [x] Interfaz Responsive: Diseño adaptable a diferentes dispositivos
+- [x] Mensajes Flash: Notificaciones temporales para informar al usuario (SweetAlert2)
+- [x] Validación de formularios en el servidor
+- [x] Seguridad: PDO, password_hash, sesiones
+- [x] Configuración y estructura MVC
+- [x] Protección de rutas por login (no por roles)
+
+### Pendiente o Mejoras Futuras
+- [ ] Vistas de crear/editar posts (`views/posts/create.php`, `edit.php`)
+- [ ] Botón y confirmación visual para eliminar posts desde la interfaz
+- [ ] Paginación en el listado de posts
+- [ ] Protección de rutas por rol y panel de administración
+- [ ] Validación de formularios en el cliente (JS)
+- [ ] Subida de imágenes/archivos para posts
+- [ ] Sistema de comentarios en posts
+- [ ] Categorías y etiquetas para posts
+- [ ] Editor WYSIWYG para posts
+- [ ] Implementación de API REST
+- [ ] Búsqueda de posts
+- [ ] Compartir en redes sociales
+- [ ] Tests automatizados
 
 ## 🚀 Instalación y Configuración
 
@@ -105,14 +177,6 @@ Todas las consultas a la base de datos se realizan mediante PDO y prepared state
 ### Autenticación Segura
 Las contraseñas se almacenan utilizando `password_hash()` y se verifican con `password_verify()`, nunca en texto plano.
 
-## 🛠️ Desarrollo Futuro
+## 🛠️ Notas de desarrollo y mejoras
 
-Posibles mejoras para implementar:
-
-- Sistema de comentarios en posts
-- Categorías y etiquetas para posts
-- Panel de administración avanzado
-- Editor WYSIWYG para posts
-- Implementación de API REST
-- Búsqueda de posts
-- Compartir en redes sociales
+Consulta la sección anterior para ver el checklist actualizado de lo implementado y lo pendiente.

@@ -25,7 +25,10 @@ $router = new Router();
 
 // Rutas de posts
 $router->add('GET', '/', [new PostController, 'index']);
+$router->add('GET', '/post/create', [new PostController, 'create']);
+$router->add('POST', '/post/store', [new PostController, 'store']);
 $router->add('GET', '/post/{id}', [new PostController, 'view']);
+$router->add('POST', '/post/{id}/delete', [new PostController, 'delete']);
 
 // Rutas de autenticación (puedes añadir más según avances)
 $router->add('GET', '/login', [new UserController, 'login']);

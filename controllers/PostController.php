@@ -34,7 +34,9 @@ class PostController
     // Muestra el formulario para crear un post
     public function create($errors = [], $old = [])
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
@@ -49,14 +51,17 @@ class PostController
     // Procesa el formulario y guarda un nuevo post
     public function store()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
         }
 
-        $title = trim($_POST['title'] ?? '');
-        $content = trim($_POST['content'] ?? '');
+    $title = trim($_POST['title'] ?? '');
+    $content = $_POST['content'] ?? '';
+    error_log('POST content: ' . $content);
         $errors = [];
         $old = ['title' => $title, 'content' => $content];
 
@@ -68,19 +73,50 @@ class PostController
             $errors[] = "El contenido es obligatorio.";
         }
 
+        // Validación y procesamiento de imagen
+        $imagePath = null;
+        if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $image = $_FILES['image'];
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($image['type'], $allowedTypes)) {
+                $errors[] = "El tipo de imagen no es válido (solo jpg, png, gif, webp).";
+            }
+            if ($image['error'] !== UPLOAD_ERR_OK) {
+                $errors[] = "Error al subir la imagen.";
+            }
+            if (!$errors) {
+                $ext = pathinfo($image['name'], PATHINFO_EXTENSION);
+                $safeName = uniqid('img_') . '.' . strtolower($ext);
+                $uploadDir = __DIR__ . '/../public/uploads/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $targetPath = $uploadDir . $safeName;
+                if (move_uploaded_file($image['tmp_name'], $targetPath)) {
+                    $imagePath = '/uploads/' . $safeName;
+                } else {
+                    $errors[] = "No se pudo guardar la imagen.";
+                }
+            }
+        }
+
         if ($errors) {
             return $this->create($errors, $old);
         }
 
         require_once __DIR__ . '/../models/Post.php';
+    require_once __DIR__ . '/../includes/summarize_hf.php';
+    $summary = obtenerResumenHF($content);
         $post = Post::create([
             'title' => $title,
             'content' => $content,
-            'user_id' => $_SESSION['user_id']
+            'user_id' => $_SESSION['user_id'],
+            'image' => $imagePath,
+            'summary' => $summary
         ]);
 
         if ($post) {
-            header('Location: /');
+            header('Location: /Personal-Blog/public/');
             exit;
         } else {
             $errors[] = "Error al crear el post.";
@@ -163,9 +199,9 @@ class PostController
     // Elimina un post
     public function delete($id)
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
+            header('Location: /Personal-Blog/public/login');
             exit;
         }
         require_once __DIR__ . '/../models/Post.php';
@@ -176,11 +212,13 @@ class PostController
             exit;
         }
         $result = $post->delete();
+        require_once __DIR__ . '/../includes/functions.php';
         if ($result) {
-            header('Location: /');
-            exit;
+            flashMessage('success', 'Post eliminado correctamente.');
+            redirect('/Personal-Blog/public/');
         } else {
-            echo "Error al eliminar el post.";
+            flashMessage('error', 'Error al eliminar el post.');
+            redirect('/Personal-Blog/public/post/' . $id);
         }
     }
 }

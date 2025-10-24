@@ -53,8 +53,9 @@ class UserController
             session_start();
             $_SESSION['user_id'] = $user->id;
             $_SESSION['username'] = $user->username;
-            header('Location: /');
-            exit;
+            require_once __DIR__ . '/../includes/functions.php';
+            flashMessage('success', '¡Bienvenido, ' . htmlspecialchars($user->username) . '! Has iniciado sesión.');
+            redirect('./');
         } else {
             $errors[] = "Email o contraseña incorrectos.";
             return $this->login($errors, $old);
@@ -117,8 +118,9 @@ class UserController
         ]);
 
         if ($newUser) {
-            header('Location: /login');
-            exit;
+            require_once __DIR__ . '/../includes/functions.php';
+            flashMessage('success', 'Usuario registrado correctamente. Ahora puedes iniciar sesión.');
+            redirect('login');
         } else {
             $errors[] = "Error al registrar el usuario.";
             return $this->register($errors, $old);
@@ -128,10 +130,10 @@ class UserController
     // Cierra la sesión del usuario
     public function logout()
     {
-        session_start();
-        session_unset();
-        session_destroy();
-        header('Location: /');
-        exit;
+    session_start();
+    session_unset();
+    session_destroy();
+    header('Location: /Personal-Blog/public/login');
+    exit;
     }
 }
