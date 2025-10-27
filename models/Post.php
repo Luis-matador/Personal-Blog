@@ -4,27 +4,27 @@ class Post
 {
     public $id;
     public $title;
+    public $descripcion;
     public $content;
     public $user_id;
     public $created_at;
     public $image;
-    public $summary;
 
     public function __construct($data = [])
     {
-    $this->id         = $data['id'] ?? null;
-    $this->title      = $data['title'] ?? null;
-    $this->content    = $data['content'] ?? null;
-    $this->user_id    = $data['user_id'] ?? null;
-    $this->created_at = $data['created_at'] ?? null;
-    $this->image      = $data['image'] ?? null;
-    $this->summary    = $data['summary'] ?? null;
+        $this->id         = $data['id'] ?? null;
+        $this->title      = $data['title'] ?? null;
+    $this->descripcion    = $data['descripcion'] ?? null;
+        $this->content    = $data['content'] ?? null;
+        $this->user_id    = $data['user_id'] ?? null;
+        $this->created_at = $data['created_at'] ?? null;
+        $this->image      = $data['image'] ?? null;
     }
 
     public static function getAll()
     {
         require __DIR__ . '/../config/database.php';
-        $stmt = $db->query("SELECT * FROM posts ORDER BY created_at DESC");
+    $stmt = $db->query("SELECT * FROM posts ORDER BY created_at DESC");
         $posts = [];
         while ($data = $stmt->fetch()) {
             $posts[] = new self($data);
@@ -44,13 +44,13 @@ class Post
     public static function create($data)
     {
         require __DIR__ . '/../config/database.php';
-        $stmt = $db->prepare("INSERT INTO posts (title, content, user_id, image, summary) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO posts (title, descripcion, content, user_id, image) VALUES (?, ?, ?, ?, ?)");
         $result = $stmt->execute([
             $data['title'],
+            $data['descripcion'],
             $data['content'],
             $data['user_id'],
-            $data['image'] ?? null,
-            $data['summary'] ?? null
+            $data['image'] ?? null
         ]);
         if ($result) {
             $id = $db->lastInsertId();

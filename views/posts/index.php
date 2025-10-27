@@ -36,7 +36,7 @@
                     </div>
                     <div class="flex flex-col justify-center items-start h-full flex-1">
                         <p class="text-gray-100 text-2xl" style="max-width: 340px; word-break: break-word; white-space: pre-line;">
-                            <?= htmlspecialchars($post->summary ?? '') ?>
+                            <?= htmlspecialchars($post->descripcion ?? '') ?>
                         </p>
                     </div>
                 </div>

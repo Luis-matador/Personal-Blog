@@ -60,14 +60,20 @@ class PostController
         }
 
     $title = trim($_POST['title'] ?? '');
+    $descripcion = trim($_POST['descripcion'] ?? '');
     $content = $_POST['content'] ?? '';
     error_log('POST content: ' . $content);
         $errors = [];
-        $old = ['title' => $title, 'content' => $content];
+        $old = ['title' => $title, 'descripcion' => $descripcion, 'content' => $content];
 
         // Validaciones
         if (empty($title)) {
             $errors[] = "El título es obligatorio.";
+        }
+        if (empty($descripcion)) {
+            $errors[] = "La descripción corta es obligatoria.";
+        } elseif (mb_strlen($descripcion) > 180) {
+            $errors[] = "La descripción corta no puede superar los 180 caracteres.";
         }
         if (empty($content)) {
             $errors[] = "El contenido es obligatorio.";
@@ -105,14 +111,12 @@ class PostController
         }
 
         require_once __DIR__ . '/../models/Post.php';
-    require_once __DIR__ . '/../includes/summarize_hf.php';
-    $summary = obtenerResumenHF($content);
         $post = Post::create([
             'title' => $title,
+            'descripcion' => $descripcion,
             'content' => $content,
             'user_id' => $_SESSION['user_id'],
-            'image' => $imagePath,
-            'summary' => $summary
+            'image' => $imagePath
         ]);
 
         if ($post) {

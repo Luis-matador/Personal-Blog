@@ -15,10 +15,14 @@ if (!empty($errors)) {
 <div class="max-w-2xl mx-auto bg-gray-800 rounded-lg shadow p-8 mt-8">
     <h1 class="text-3xl font-bold mb-6 text-center">Crear nueva publicación</h1>
   <form action="/Personal-Blog/public/post/store" method="POST" enctype="multipart/form-data" id="create-post-form" class="space-y-6">
-        <div>
-            <label for="title" class="block text-lg font-semibold mb-2">Título</label>
-            <input type="text" name="title" id="title" class="w-full px-4 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" required maxlength="120" value="<?= htmlspecialchars($old['title'] ?? '') ?>">
-        </div>
+    <div>
+      <label for="title" class="block text-lg font-semibold mb-2">Título</label>
+      <input type="text" name="title" id="title" class="w-full px-4 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" required maxlength="120" value="<?= htmlspecialchars($old['title'] ?? '') ?>">
+    </div>
+    <div>
+      <label for="descripcion" class="block text-lg font-semibold mb-2">Descripción corta (máx. 180 caracteres)</label>
+      <input type="text" name="descripcion" id="descripcion" class="w-full px-4 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" required maxlength="180" value="<?= htmlspecialchars($old['descripcion'] ?? '') ?>">
+    </div>
     <div>
       <label for="image" class="block text-lg font-semibold mb-2">Imagen destacada</label>
       <div>
