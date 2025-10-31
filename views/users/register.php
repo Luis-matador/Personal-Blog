@@ -3,7 +3,7 @@ $errors = $errors ?? [];
 $old = $old ?? [];
 require_once __DIR__ . '/../../includes/functions.php';
 ?>
-<div class="flex items-center justify-center w-full h-full">
+<div class="flex items-center justify-center min-h-[60vh] w-full">
   <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-md p-8">
     <h2 class="text-2xl font-bold mb-6 text-center text-white">Registro</h2>
     <?php if (!empty($errors)): ?>

@@ -33,8 +33,8 @@ if (!empty($errors)) {
     </div>
     <div>
       <label for="content" class="block text-lg font-semibold mb-2">Contenido</label>
-            <div id="quill-editor" style="height: 300px;" class="bg-gray-900 text-gray-100 rounded border border-gray-700"></div>
-            <textarea name="content" id="content" style="display:none;"><?= htmlspecialchars($old['content'] ?? '') ?></textarea>
+            <div id="quill-editor" class="bg-gray-900 text-gray-100 rounded border border-gray-700 h-[300px]"></div>
+            <textarea name="content" id="content" class="hidden"><?= htmlspecialchars($old['content'] ?? '') ?></textarea>
     </div>
         <div class="flex justify-end gap-4">
             <a href="/Personal-Blog/public/" class="px-6 py-2 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 transition">Cancelar</a>
@@ -89,9 +89,7 @@ if (!empty($errors)) {
         reader.onload = function(e) {
           var img = document.createElement('img');
           img.src = e.target.result;
-          img.className = 'rounded shadow border border-gray-700';
-          img.style.maxWidth = '200px';
-          img.style.height = 'auto';
+          img.className = 'rounded shadow border border-gray-700 max-w-[200px] h-auto';
           previewContainer.appendChild(img);
         };
         reader.readAsDataURL(fileInput.files[0]);

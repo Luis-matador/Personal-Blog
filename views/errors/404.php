@@ -14,7 +14,7 @@
                 <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">Algo falta aquí.</p>
                 <p class="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">Lo sentimos, no podemos encontrar esa página. Puedes volver al inicio para seguir explorando.</p>
                 <a href="/Personal-Blog/public/" class="inline-flex text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-indigo-900 my-4">Volver al inicio</a>
-            </div>   
+            </div>
         </div>
     </section>
 </body>

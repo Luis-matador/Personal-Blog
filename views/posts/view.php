@@ -6,7 +6,7 @@
 ?>
 <article class="bg-gray-800 rounded shadow p-8 max-w-3xl mx-auto">
     <?php if (!empty($post->image)): ?>
-        <img src="/Personal-Blog/public<?= htmlspecialchars($post->image) ?>" alt="Imagen del post" class="mb-6 rounded shadow border border-gray-700" style="max-width: 500px; height: auto;">
+        <img src="/Personal-Blog/public<?= htmlspecialchars($post->image) ?>" alt="Imagen del post" class="mb-6 rounded shadow border border-gray-700 max-w-[500px] h-auto">
     <?php else: ?>
         <div class="mb-6 bg-gray-700 text-gray-400 rounded p-4 text-center">Sin imagen</div>
     <?php endif; ?>
@@ -14,7 +14,7 @@
     <p class="text-gray-400 text-sm mb-6">
         Publicado el <?= date('d/m/Y H:i', strtotime($post->created_at)) ?>
     </p>
-    <div class="prose prose-invert text-gray-100" style="max-width: 100%; word-break: break-word; white-space: pre-line;">
+    <div class="prose prose-invert text-gray-100 max-w-full break-words whitespace-pre-line">
         <?= $post->content ?>
     </div>
     <div class="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
