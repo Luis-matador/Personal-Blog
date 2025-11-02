@@ -15,6 +15,7 @@ error_reporting(E_ALL);
 session_start();
 
 // Cargar configuración y dependencias
+require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/Router.php';
 require_once __DIR__ . '/../controllers/PostController.php';
@@ -25,9 +26,12 @@ $router = new Router();
 
 // Rutas de posts
 $router->add('GET', '/', [new PostController, 'index']);
+$router->add('GET', '/search', [new PostController, 'search']);
 $router->add('GET', '/post/create', [new PostController, 'create']);
 $router->add('POST', '/post/store', [new PostController, 'store']);
 $router->add('GET', '/post/{id}', [new PostController, 'view']);
+$router->add('GET', '/post/{id}/edit', [new PostController, 'edit']);
+$router->add('POST', '/post/{id}/update', [new PostController, 'update']);
 $router->add('POST', '/post/{id}/delete', [new PostController, 'delete']);
 
 // Rutas de autenticación (puedes añadir más según avances)

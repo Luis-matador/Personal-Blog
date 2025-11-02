@@ -5,13 +5,24 @@ class PostController
     // Muestra la lista de posts
     public function index()
     {
-        require_once __DIR__ . '/../models/Post.php';
-        $posts = Post::getAll();
-        $pageTitle = "Inicio";
-        ob_start();
-        include __DIR__ . '/../views/posts/index.php';
-        $content = ob_get_clean();
-        include __DIR__ . '/../views/layouts/main.php';
+        try {
+            require_once __DIR__ . '/../models/Post.php';
+            
+            // Paginación
+            $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+            $perPage = 6;
+            $posts = Post::getPaginated($page, $perPage);
+            $totalPosts = Post::count();
+            $totalPages = ceil($totalPosts / $perPage);
+            
+            $pageTitle = "Inicio";
+            ob_start();
+            include __DIR__ . '/../views/posts/index.php';
+            $content = ob_get_clean();
+            include __DIR__ . '/../views/layouts/main.php';
+        } catch (Exception $e) {
+            $this->handleError($e);
+        }
     }
 
     // Muestra un post individual
@@ -34,11 +45,8 @@ class PostController
     // Muestra el formulario para crear un post
     public function create($errors = [], $old = [])
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
+            header('Location: ' . url('login'));
             exit;
         }
         $pageTitle = "Nuevo Post";
@@ -51,11 +59,8 @@ class PostController
     // Procesa el formulario y guarda un nuevo post
     public function store()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
+            header('Location: ' . url('login'));
             exit;
         }
 
@@ -82,25 +87,11 @@ class PostController
         // Validación y procesamiento de imagen
         $imagePath = null;
         if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
-            $image = $_FILES['image'];
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-            if (!in_array($image['type'], $allowedTypes)) {
-                $errors[] = "El tipo de imagen no es válido (solo jpg, png, gif, webp).";
-            }
-            if ($image['error'] !== UPLOAD_ERR_OK) {
-                $errors[] = "Error al subir la imagen.";
-            }
-            if (!$errors) {
-                $ext = pathinfo($image['name'], PATHINFO_EXTENSION);
-                $safeName = uniqid('img_') . '.' . strtolower($ext);
-                $uploadDir = __DIR__ . '/../public/uploads/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-                $targetPath = $uploadDir . $safeName;
-                if (move_uploaded_file($image['tmp_name'], $targetPath)) {
-                    $imagePath = '/uploads/' . $safeName;
-                } else {
+            require_once __DIR__ . '/../includes/functions.php';
+            
+            if (validateImage($_FILES['image'], $errors)) {
+                $imagePath = uploadImage($_FILES['image']);
+                if (!$imagePath) {
                     $errors[] = "No se pudo guardar la imagen.";
                 }
             }
@@ -120,7 +111,7 @@ class PostController
         ]);
 
         if ($post) {
-            header('Location: /Personal-Blog/public/');
+            header('Location: ' . url());
             exit;
         } else {
             $errors[] = "Error al crear el post.";
@@ -131,9 +122,8 @@ class PostController
     // Muestra el formulario para editar un post
     public function edit($id, $errors = [], $old = [])
     {
-        session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
+            header('Location: ' . url('login'));
             exit;
         }
         require_once __DIR__ . '/../models/Post.php';
@@ -145,7 +135,7 @@ class PostController
         }
         $pageTitle = "Editar Post";
         if (!$old) {
-            $old = ['title' => $post->title, 'content' => $post->content];
+            $old = ['title' => $post->title, 'descripcion' => $post->descripcion, 'content' => $post->content];
         }
         ob_start();
         include __DIR__ . '/../views/posts/edit.php';
@@ -156,9 +146,8 @@ class PostController
     // Procesa el formulario y actualiza el post
     public function update($id)
     {
-        session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
+            header('Location: ' . url('login'));
             exit;
         }
         require_once __DIR__ . '/../models/Post.php';
@@ -170,16 +159,35 @@ class PostController
         }
 
         $title = trim($_POST['title'] ?? '');
-        $content = trim($_POST['content'] ?? '');
+        $descripcion = trim($_POST['descripcion'] ?? '');
+        $content = $_POST['content'] ?? '';
         $errors = [];
-        $old = ['title' => $title, 'content' => $content];
+        $old = ['title' => $title, 'descripcion' => $descripcion, 'content' => $content];
 
         // Validaciones
         if (empty($title)) {
             $errors[] = "El título es obligatorio.";
         }
+        if (empty($descripcion)) {
+            $errors[] = "La descripción corta es obligatoria.";
+        } elseif (mb_strlen($descripcion) > 180) {
+            $errors[] = "La descripción corta no puede superar los 180 caracteres.";
+        }
         if (empty($content)) {
             $errors[] = "El contenido es obligatorio.";
+        }
+
+        // Validación y procesamiento de imagen
+        $imagePath = $post->image; // Mantener la imagen actual por defecto
+        if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+            require_once __DIR__ . '/../includes/functions.php';
+            
+            if (validateImage($_FILES['image'], $errors)) {
+                $imagePath = uploadImage($_FILES['image'], $post->image);
+                if (!$imagePath) {
+                    $errors[] = "No se pudo guardar la imagen.";
+                }
+            }
         }
 
         if ($errors) {
@@ -188,11 +196,15 @@ class PostController
 
         $result = $post->update([
             'title' => $title,
-            'content' => $content
+            'descripcion' => $descripcion,
+            'content' => $content,
+            'image' => $imagePath
         ]);
 
         if ($result) {
-            header('Location: /post/' . $id);
+            require_once __DIR__ . '/../includes/functions.php';
+            flashMessage('success', 'Post actualizado correctamente.');
+            header('Location: ' . url());
             exit;
         } else {
             $errors[] = "Error al actualizar el post.";
@@ -203,9 +215,8 @@ class PostController
     // Elimina un post
     public function delete($id)
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /Personal-Blog/public/login');
+            header('Location: ' . url('login'));
             exit;
         }
         require_once __DIR__ . '/../models/Post.php';
@@ -215,14 +226,64 @@ class PostController
             echo "No tienes permiso para eliminar este post.";
             exit;
         }
+        
+        // Eliminar imagen física si existe
+        if (!empty($post->image)) {
+            $imagePath = __DIR__ . '/../public' . $post->image;
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        
         $result = $post->delete();
         require_once __DIR__ . '/../includes/functions.php';
         if ($result) {
             flashMessage('success', 'Post eliminado correctamente.');
-            redirect('/Personal-Blog/public/');
+            redirect(url());
         } else {
             flashMessage('error', 'Error al eliminar el post.');
-            redirect('/Personal-Blog/public/post/' . $id);
+            redirect(url('post/' . $id));
         }
+    }
+
+    // Búsqueda de posts
+    public function search()
+    {
+        try {
+            require_once __DIR__ . '/../models/Post.php';
+            
+            $query = isset($_GET['q']) ? trim($_GET['q']) : '';
+            $posts = [];
+            
+            if (!empty($query)) {
+                $posts = Post::search($query);
+            }
+            
+            $pageTitle = "Búsqueda: " . htmlspecialchars($query);
+            ob_start();
+            include __DIR__ . '/../views/posts/search.php';
+            $content = ob_get_clean();
+            include __DIR__ . '/../views/layouts/main.php';
+        } catch (Exception $e) {
+            $this->handleError($e);
+        }
+    }
+
+    /**
+     * Maneja errores de forma centralizada
+     * @param Exception $e Excepción capturada
+     */
+    private function handleError($e)
+    {
+        // Log del error
+        error_log('[' . date('Y-m-d H:i:s') . '] Error en PostController: ' . $e->getMessage());
+        error_log('Trace: ' . $e->getTraceAsString());
+        
+        // Mostrar página de error 500
+        http_response_code(500);
+        $errorMessage = ini_get('display_errors') ? $e->getMessage() : '';
+        require_once __DIR__ . '/../config/config.php';
+        include __DIR__ . '/../views/errors/500.php';
+        exit;
     }
 }

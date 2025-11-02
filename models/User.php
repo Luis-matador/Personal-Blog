@@ -19,7 +19,8 @@ class User
 
     public static function getById($id)
     {
-        require __DIR__ . '/../config/database.php';
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$id]);
         $data = $stmt->fetch();
@@ -28,7 +29,8 @@ class User
 
     public static function getByEmail($email)
     {
-        require __DIR__ . '/../config/database.php';
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $data = $stmt->fetch();
@@ -37,7 +39,8 @@ class User
 
     public static function create($data)
     {
-        require __DIR__ . '/../config/database.php';
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
         $result = $stmt->execute([
             $data['username'],
@@ -58,5 +61,20 @@ class User
             return $user;
         }
         return null;
+    }
+
+    /**
+     * Obtiene la cantidad de posts creados por un usuario
+     * @param int $userId ID del usuario
+     * @return int Cantidad de posts
+     */
+    public static function getPostCount($userId)
+    {
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) as total FROM posts WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        $result = $stmt->fetch();
+        return (int)$result['total'];
     }
 }

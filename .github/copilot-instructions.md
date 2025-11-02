@@ -1,25 +1,5 @@
 ## 📋 Estado actual del proyecto (checklist)
 
-### Implementado
-- [x] Sistema de autenticación (registro/login/logout)
-- [x] CRUD de posts (controlador y modelo, faltan vistas de crear/editar)
-- [x] Enrutamiento amigable y seguro
-- [x] Mensajes flash con SweetAlert2
-- [x] Protección de rutas por login
-- [x] Validación de formularios en el servidor
-- [x] Estructura MVC y uso de PDO/password_hash
-
-### Pendiente o mejoras sugeridas
-- [ ] Vistas de crear/editar posts (`views/posts/create.php`, `edit.php`)
-- [ ] Paginación en el listado de posts
-- [ ] Protección de rutas por rol y panel de administración
-- [ ] Validación de formularios en el cliente (JS)
-- [ ] Subida de imágenes/archivos para posts (obligatorio para el enunciado)
-- [ ] Sistema de comentarios, categorías, etiquetas
-- [ ] Editor WYSIWYG para posts
-- [ ] API REST, búsqueda, compartir en redes
-- [ ] Tests automatizados
-
 ---
 
 ## 🚩 Pasos mínimos para cumplir el enunciado

@@ -24,41 +24,44 @@ class UserController
     // Procesa el formulario de login
     public function authenticate()
     {
-        // Recoge datos del formulario
-        $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $errors = [];
-        $old = ['email' => $email];
+        try {
+            // Recoge datos del formulario
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $errors = [];
+            $old = ['email' => $email];
 
-        // Validación básica
-        if (empty($email)) {
-            $errors[] = "El email es obligatorio.";
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "El email no es válido.";
-        }
-        if (empty($password)) {
-            $errors[] = "La contraseña es obligatoria.";
-        }
+            // Validación básica
+            if (empty($email)) {
+                $errors[] = "El email es obligatorio.";
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = "El email no es válido.";
+            }
+            if (empty($password)) {
+                $errors[] = "La contraseña es obligatoria.";
+            }
 
-        // Si hay errores, vuelve a mostrar el formulario con mensajes
-        if ($errors) {
-            return $this->login($errors, $old);
-        }
+            // Si hay errores, vuelve a mostrar el formulario con mensajes
+            if ($errors) {
+                return $this->login($errors, $old);
+            }
 
-        // Autenticación
-        require_once __DIR__ . '/../models/User.php';
-        $user = User::authenticate($email, $password);
+            // Autenticación
+            require_once __DIR__ . '/../models/User.php';
+            $user = User::authenticate($email, $password);
 
-        if ($user) {
-            session_start();
-            $_SESSION['user_id'] = $user->id;
-            $_SESSION['username'] = $user->username;
-            require_once __DIR__ . '/../includes/functions.php';
-            flashMessage('success', '¡Bienvenido, ' . htmlspecialchars($user->username) . '! Has iniciado sesión.');
-            redirect('./');
-        } else {
-            $errors[] = "Email o contraseña incorrectos.";
-            return $this->login($errors, $old);
+            if ($user) {
+                $_SESSION['user_id'] = $user->id;
+                $_SESSION['username'] = $user->username;
+                require_once __DIR__ . '/../includes/functions.php';
+                flashMessage('success', '¡Bienvenido, ' . htmlspecialchars($user->username) . '! Has iniciado sesión.');
+                redirect(url());
+            } else {
+                $errors[] = "Email o contraseña incorrectos.";
+                return $this->login($errors, $old);
+            }
+        } catch (Exception $e) {
+            $this->handleError($e);
         }
     }
 
@@ -120,7 +123,7 @@ class UserController
         if ($newUser) {
             require_once __DIR__ . '/../includes/functions.php';
             flashMessage('success', 'Usuario registrado correctamente. Ahora puedes iniciar sesión.');
-            redirect('login');
+            redirect(url('login'));
         } else {
             $errors[] = "Error al registrar el usuario.";
             return $this->register($errors, $old);
@@ -130,10 +133,27 @@ class UserController
     // Cierra la sesión del usuario
     public function logout()
     {
-    session_start();
-    session_unset();
-    session_destroy();
-    header('Location: /Personal-Blog/public/login');
-    exit;
+        session_unset();
+        session_destroy();
+        header('Location: ' . url('login'));
+        exit;
+    }
+
+    /**
+     * Maneja errores de forma centralizada
+     * @param Exception $e Excepción capturada
+     */
+    private function handleError($e)
+    {
+        // Log del error
+        error_log('[' . date('Y-m-d H:i:s') . '] Error en UserController: ' . $e->getMessage());
+        error_log('Trace: ' . $e->getTraceAsString());
+        
+        // Mostrar página de error 500
+        http_response_code(500);
+        $errorMessage = ini_get('display_errors') ? $e->getMessage() : '';
+        require_once __DIR__ . '/../config/config.php';
+        include __DIR__ . '/../views/errors/500.php';
+        exit;
     }
 }
