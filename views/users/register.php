@@ -36,7 +36,7 @@ require_once __DIR__ . '/../../includes/functions.php';
    <input class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500"
      type="password" name="password_confirm" id="password_confirm" required autocomplete="new-password" value="">
       </div>
-      <button class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition" type="submit">
+      <button class="w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 transition shadow-lg transform hover:scale-[1.02]" type="submit">
         Registrarse
       </button>
     </form>

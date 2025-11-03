@@ -16,13 +16,13 @@ if (!empty($errors)) {
   <form action="<?= url('post/' . htmlspecialchars($post->id) . '/update') ?>" method="POST" enctype="multipart/form-data" id="edit-post-form" class="space-y-6">
     <div>
   <label for="title" class="block text-lg font-semibold mb-2">Título</label>
-  <input type="text" name="title" id="title" class="w-full px-4 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" required maxlength="50" value="<?= htmlspecialchars($old['title'] ?? $post->title) ?>">
-    <div class="text-sm text-gray-400 mt-1"><span id="title-count">0/50</span></div>
+  <input type="text" name="title" id="title" class="w-full px-4 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" required maxlength="30" value="<?= htmlspecialchars($old['title'] ?? $post->title) ?>">
+    <div class="text-sm text-gray-400 mt-1"><span id="title-count">0/30</span></div>
     </div>
     <div>
   <label for="descripcion" class="block text-lg font-semibold mb-2">Descripción corta</label>
-  <textarea name="descripcion" id="descripcion" rows="1" class="w-full px-4 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none overflow-hidden" required maxlength="100"><?= htmlspecialchars($old['descripcion'] ?? $post->descripcion) ?></textarea>
-    <div class="text-sm text-gray-400 mt-1"><span id="desc-count">0/100</span></div>
+  <textarea name="descripcion" id="descripcion" rows="1" class="w-full px-4 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none overflow-hidden" required maxlength="60"><?= htmlspecialchars($old['descripcion'] ?? $post->descripcion) ?></textarea>
+    <div class="text-sm text-gray-400 mt-1"><span id="desc-count">0/60</span></div>
     </div>
     <div>
       <label class="block text-lg font-semibold mb-2">Imagen destacada</label>
@@ -43,7 +43,12 @@ if (!empty($errors)) {
       <textarea name="content" id="content" class="hidden"><?= htmlspecialchars($old['content'] ?? $post->content) ?></textarea>
     </div>
         <div class="flex justify-end gap-4">
-            <a href="<?= url('post/' . htmlspecialchars($post->id)) ?>" class="px-6 py-2 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 transition">Cancelar</a>
+            <?php 
+            // Determinar la URL de cancelar según si el usuario es admin
+            $isAdmin = isset($_SESSION['admin_access']) && $_SESSION['admin_access'] === true;
+            $cancelUrl = $isAdmin ? url('admin/posts') : url('post/' . htmlspecialchars($post->id));
+            ?>
+            <a href="<?= $cancelUrl ?>" class="px-6 py-2 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 transition">Cancelar</a>
             <button type="submit" class="px-6 py-2 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">Actualizar</button>
         </div>
     </form>
@@ -82,6 +87,68 @@ if (!empty($errors)) {
   }
   .ql-picker-label, .ql-picker-item {
     color: #e2e8f0 !important;
+  }
+  
+  /* Estilos para los dropdowns del editor */
+  .ql-picker-options {
+    background-color: #2d3748 !important;
+    border: 1px solid #4a5568 !important;
+    border-radius: 0.375rem !important;
+    padding: 0.25rem !important;
+  }
+  .ql-picker-item {
+    color: #e2e8f0 !important;
+  }
+  .ql-picker-item:hover {
+    background-color: #4a5568 !important;
+    color: #fff !important;
+  }
+  .ql-picker.ql-expanded .ql-picker-label {
+    border-color: #4a5568 !important;
+  }
+  
+  /* Selector de color - mostrar el color seleccionado */
+  .ql-color-picker .ql-picker-options,
+  .ql-background .ql-picker-options {
+    background-color: #2d3748 !important;
+    padding: 5px !important;
+  }
+  
+  .ql-color-picker .ql-picker-item,
+  .ql-background .ql-picker-item {
+    width: 24px !important;
+    height: 24px !important;
+    border: 2px solid #4a5568 !important;
+    margin: 2px !important;
+  }
+  
+  /* Mostrar el color actual en el botón */
+  /* El color se aplicará dinámicamente vía JavaScript */
+  .ql-color .ql-picker-label .ql-stroke.ql-color-label {
+    stroke: currentColor !important;
+  }
+  
+  .ql-background .ql-picker-label .ql-fill.ql-color-label {
+    fill: currentColor !important;
+  }
+  
+  /* Clase para aplicar el color seleccionado */
+  .ql-picker-label[data-value]:not([data-value=""]) {
+    color: inherit;
+  }
+  
+  /* Estados activos/seleccionados */
+  .ql-toolbar button.ql-active,
+  .ql-toolbar .ql-picker-label.ql-active,
+  .ql-toolbar .ql-picker-item.ql-selected {
+    background-color: #4a5568 !important;
+    border-radius: 4px !important;
+  }
+  
+  .ql-toolbar button:hover,
+  .ql-toolbar .ql-picker-label:hover {
+    background-color: #374151 !important;
+    border-radius: 4px !important;
   }
   
   /* Mejoras responsive para móviles */
@@ -125,19 +192,19 @@ if (!empty($errors)) {
     var titleInput = document.getElementById('title');
     var titleCount = document.getElementById('title-count');
     titleInput.addEventListener('input', function() {
-      titleCount.textContent = this.value.length + '/50 caracteres';
+      titleCount.textContent = this.value.length + '/30 caracteres';
     });
-    titleCount.textContent = titleInput.value.length + '/50 caracteres';
+    titleCount.textContent = titleInput.value.length + '/30 caracteres';
 
     var descInput = document.getElementById('descripcion');
     var descCount = document.getElementById('desc-count');
     descInput.addEventListener('input', function() {
-      descCount.textContent = this.value.length + '/100 caracteres';
+      descCount.textContent = this.value.length + '/60 caracteres';
       // Auto-resize del textarea
       this.style.height = 'auto';
       this.style.height = this.scrollHeight + 'px';
     });
-    descCount.textContent = descInput.value.length + '/100 caracteres';
+    descCount.textContent = descInput.value.length + '/60 caracteres';
     // Ajustar altura inicial si hay contenido
     descInput.style.height = 'auto';
     descInput.style.height = descInput.scrollHeight + 'px';
@@ -169,6 +236,53 @@ if (!empty($errors)) {
     quill.on('text-change', function() {
       contentTextarea.value = quill.root.innerHTML;
     });
+
+    // Actualizar el color de la línea indicadora en los selectores de color
+    function updateColorIndicators() {
+      // Selector de color de texto
+      const colorPicker = document.querySelector('.ql-color .ql-picker-label');
+      if (colorPicker) {
+        const colorValue = colorPicker.getAttribute('data-value');
+        const strokeElement = colorPicker.querySelector('.ql-stroke.ql-color-label');
+        if (strokeElement && colorValue) {
+          strokeElement.style.stroke = colorValue;
+        }
+      }
+      
+      // Selector de color de fondo
+      const bgPicker = document.querySelector('.ql-background .ql-picker-label');
+      if (bgPicker) {
+        const bgValue = bgPicker.getAttribute('data-value');
+        const fillElement = bgPicker.querySelector('.ql-fill.ql-color-label');
+        if (fillElement && bgValue) {
+          fillElement.style.fill = bgValue;
+        }
+      }
+    }
+    
+    // Observar cambios en los atributos data-value
+    const observer = new MutationObserver(updateColorIndicators);
+    const colorButton = document.querySelector('.ql-color');
+    const bgButton = document.querySelector('.ql-background');
+    
+    if (colorButton) {
+      observer.observe(colorButton, { 
+        attributes: true, 
+        subtree: true, 
+        attributeFilter: ['data-value'] 
+      });
+    }
+    
+    if (bgButton) {
+      observer.observe(bgButton, { 
+        attributes: true, 
+        subtree: true, 
+        attributeFilter: ['data-value'] 
+      });
+    }
+    
+    // Actualizar al inicio
+    updateColorIndicators();
 
     // Vista previa de imagen - FIX: Botón específico sin duplicados
     var fileInput = document.getElementById('image');

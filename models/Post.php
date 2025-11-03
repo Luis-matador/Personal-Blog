@@ -38,6 +38,27 @@ class Post
     }
 
     /**
+     * Obtiene todos los posts con información del autor
+     * @return array
+     */
+    public static function allWithAuthors()
+    {
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->query("
+            SELECT p.*, u.username as author_name 
+            FROM posts p 
+            LEFT JOIN users u ON p.user_id = u.id 
+            ORDER BY p.created_at DESC
+        ");
+        $posts = [];
+        while ($data = $stmt->fetch()) {
+            $posts[] = new self($data);
+        }
+        return $posts;
+    }
+
+    /**
      * Obtiene posts paginados con información del autor
      * @param int $page Número de página (empieza en 1)
      * @param int $perPage Posts por página

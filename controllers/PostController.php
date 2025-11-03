@@ -74,11 +74,13 @@ class PostController
         // Validaciones
         if (empty($title)) {
             $errors[] = "El título es obligatorio.";
+        } elseif (mb_strlen($title) > 30) {
+            $errors[] = "El título no puede superar los 30 caracteres.";
         }
         if (empty($descripcion)) {
             $errors[] = "La descripción corta es obligatoria.";
-        } elseif (mb_strlen($descripcion) > 180) {
-            $errors[] = "La descripción corta no puede superar los 180 caracteres.";
+        } elseif (mb_strlen($descripcion) > 60) {
+            $errors[] = "La descripción corta no puede superar los 60 caracteres.";
         }
         if (empty($content)) {
             $errors[] = "El contenido es obligatorio.";
@@ -128,7 +130,11 @@ class PostController
         }
         require_once __DIR__ . '/../models/Post.php';
         $post = Post::getById($id);
-        if (!$post || $post->user_id != $_SESSION['user_id']) {
+        
+        // Verificar si el usuario es admin o dueño del post
+        $isAdmin = isset($_SESSION['admin_access']) && $_SESSION['admin_access'] === true;
+        
+        if (!$post || (!$isAdmin && $post->user_id != $_SESSION['user_id'])) {
             http_response_code(403);
             echo "No tienes permiso para editar este post.";
             exit;
@@ -152,7 +158,11 @@ class PostController
         }
         require_once __DIR__ . '/../models/Post.php';
         $post = Post::getById($id);
-        if (!$post || $post->user_id != $_SESSION['user_id']) {
+        
+        // Verificar si el usuario es admin o dueño del post
+        $isAdmin = isset($_SESSION['admin_access']) && $_SESSION['admin_access'] === true;
+        
+        if (!$post || (!$isAdmin && $post->user_id != $_SESSION['user_id'])) {
             http_response_code(403);
             echo "No tienes permiso para editar este post.";
             exit;
@@ -167,11 +177,13 @@ class PostController
         // Validaciones
         if (empty($title)) {
             $errors[] = "El título es obligatorio.";
+        } elseif (mb_strlen($title) > 30) {
+            $errors[] = "El título no puede superar los 30 caracteres.";
         }
         if (empty($descripcion)) {
             $errors[] = "La descripción corta es obligatoria.";
-        } elseif (mb_strlen($descripcion) > 180) {
-            $errors[] = "La descripción corta no puede superar los 180 caracteres.";
+        } elseif (mb_strlen($descripcion) > 60) {
+            $errors[] = "La descripción corta no puede superar los 60 caracteres.";
         }
         if (empty($content)) {
             $errors[] = "El contenido es obligatorio.";
@@ -204,7 +216,13 @@ class PostController
         if ($result) {
             require_once __DIR__ . '/../includes/functions.php';
             flashMessage('success', 'Post actualizado correctamente.');
-            header('Location: ' . url());
+            
+            // Redirigir según si es admin o no
+            if ($isAdmin) {
+                header('Location: ' . url('admin/posts'));
+            } else {
+                header('Location: ' . url());
+            }
             exit;
         } else {
             $errors[] = "Error al actualizar el post.";
@@ -267,6 +285,35 @@ class PostController
         } catch (Exception $e) {
             $this->handleError($e);
         }
+    }
+
+    // Eliminar post desde admin (puede eliminar cualquier post)
+    public function adminDelete($id)
+    {
+        require_once __DIR__ . '/../models/Post.php';
+        $post = Post::getById($id);
+        
+        if (!$post) {
+            $_SESSION['flash_error'] = "Post no encontrado.";
+            redirect(url('admin/posts'));
+            return;
+        }
+
+        // Eliminar imagen si existe
+        if (!empty($post->image)) {
+            $imagePath = __DIR__ . '/../public' . $post->image;
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        if ($post->delete()) {
+            $_SESSION['flash_success'] = "Post eliminado correctamente.";
+        } else {
+            $_SESSION['flash_error'] = "Error al eliminar el post.";
+        }
+        
+        redirect(url('admin/posts'));
     }
 
     /**

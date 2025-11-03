@@ -236,6 +236,6 @@ function compressImage($filePath, $type) {
 			return $result;
 			
 		default:
-			return true; // GIF no necesita compresión adicional
+			return true;
 	}
 }

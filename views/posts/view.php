@@ -4,14 +4,20 @@
  * Muestra el título, contenido y fecha de publicación
  */
 ?>
-<div class="max-w-4xl mx-auto px-4">
+<div class="max-w-3xl mx-auto px-4 py-8">
     <!-- Botón volver arriba -->
     <div class="mb-6">
-        <a href="<?= url() ?>" class="inline-flex items-center gap-2 px-6 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition font-medium">
+        <?php 
+        // Detectar si vienes desde el panel de admin
+        $fromAdmin = isset($_GET['from']) && $_GET['from'] === 'admin';
+        $backUrl = $fromAdmin ? url('admin/posts') : url();
+        $backText = $fromAdmin ? 'Volver al panel de posts' : 'Volver al listado';
+        ?>
+        <a href="<?= $backUrl ?>" class="inline-flex items-center gap-2 px-6 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
-            Volver al listado
+            <?= $backText ?>
         </a>
     </div>
 
@@ -19,22 +25,23 @@
     <article class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
         <!-- Imagen destacada -->
         <?php if (!empty($post->image)): ?>
-            <div class="w-full h-80 overflow-hidden">
+            <div class="w-full cursor-pointer group relative" onclick="openImageModal()">
                 <img src="<?= asset(ltrim($post->image, '/')) ?>" 
                      alt="Imagen del post" 
-                     class="w-full h-full object-cover">
+                     class="w-full block transition-transform duration-300 group-hover:scale-[1.02]"
+                     id="post-image">
             </div>
         <?php endif; ?>
         
         <!-- Contenido del post -->
-        <div class="p-8 md:p-12">
+        <div class="p-6 md:p-8">
             <!-- Título -->
-            <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-4 break-words leading-tight">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-white mb-3 break-words leading-tight">
                 <?= htmlspecialchars($post->title) ?>
             </h1>
             
             <!-- Metadatos -->
-            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-8 pb-6 border-b border-gray-700">
+            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-6 pb-4 border-b border-gray-700">
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
@@ -57,15 +64,15 @@
             
             <!-- Descripción corta -->
             <?php if (!empty($post->descripcion)): ?>
-                <div class="bg-indigo-900/30 border-l-4 border-indigo-500 p-4 mb-8 rounded-r-lg">
-                    <p class="text-gray-300 text-lg italic leading-relaxed">
+                <div class="bg-indigo-900/30 border-l-4 border-indigo-500 p-3 mb-6 rounded-r-lg">
+                    <p class="text-gray-300 text-base italic leading-relaxed">
                         <?= htmlspecialchars($post->descripcion) ?>
                     </p>
                 </div>
             <?php endif; ?>
             
             <!-- Contenido principal -->
-            <div class="prose prose-invert prose-lg max-w-none text-gray-100 break-words">
+            <div class="prose prose-invert prose-base max-w-none text-gray-100 break-words">
                 <?= $post->content ?>
             </div>
         </div>
@@ -75,7 +82,7 @@
         require_once __DIR__ . '/../../includes/functions.php';
         if (session_status() === PHP_SESSION_NONE) session_start();
         if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $post->user_id): ?>
-            <div class="bg-gray-800/50 border-t border-gray-700 p-6">
+            <div class="bg-gray-800/50 border-t border-gray-700 p-4">
                 <div class="flex flex-wrap gap-3 justify-end">
                     <a href="<?= url('post/' . htmlspecialchars($post->id) . '/edit') ?>" 
                        class="inline-flex flex-row items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105">
@@ -108,3 +115,41 @@
         <?php endif; ?>
     </article>
 </div>
+
+<!-- Modal de imagen ampliada -->
+<?php if (!empty($post->image)): ?>
+<div id="image-modal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-[200] flex items-center justify-center p-4" onclick="closeImageModal()">
+    <div class="relative max-w-7xl max-h-full">
+        <!-- Botón cerrar -->
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg transition z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <!-- Imagen ampliada -->
+        <img src="<?= asset(ltrim($post->image, '/')) ?>" 
+             alt="Imagen ampliada" 
+             class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+             onclick="event.stopPropagation()">
+    </div>
+</div>
+
+<script>
+function openImageModal() {
+    document.getElementById('image-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    document.getElementById('image-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Cerrar con tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeImageModal();
+    }
+});
+</script>
+<?php endif; ?>

@@ -77,4 +77,88 @@ class User
         $result = $stmt->fetch();
         return (int)$result['total'];
     }
+
+    /**
+     * Obtiene todos los usuarios
+     * @return array Array de objetos User
+     */
+    public static function all()
+    {
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->query("SELECT * FROM users ORDER BY created_at DESC");
+        $users = [];
+        while ($row = $stmt->fetch()) {
+            $users[] = new self($row);
+        }
+        return $users;
+    }
+
+    /**
+     * Actualiza los datos de un usuario (excepto la contraseña)
+     * @param int $id ID del usuario
+     * @param array $data Datos a actualizar
+     * @return bool True si se actualizó correctamente
+     */
+    public static function update($id, $data)
+    {
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
+        return $stmt->execute([
+            $data['username'],
+            $data['email'],
+            $id
+        ]);
+    }
+
+    /**
+     * Elimina un usuario y todos sus posts asociados
+     * @param int $id ID del usuario
+     * @return bool True si se eliminó correctamente
+     */
+    public static function delete($id)
+    {
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
+        
+        try {
+            // Iniciar transacción
+            $db->beginTransaction();
+            
+            // Primero eliminar todos los posts del usuario
+            $stmt = $db->prepare("DELETE FROM posts WHERE user_id = ?");
+            $stmt->execute([$id]);
+            
+            // Luego eliminar el usuario
+            $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->execute([$id]);
+            
+            // Confirmar transacción
+            $db->commit();
+            return true;
+        } catch (Exception $e) {
+            // Si hay error, revertir cambios
+            $db->rollBack();
+            error_log("Error al eliminar usuario: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza la contraseña de un usuario
+     * @param int $id ID del usuario
+     * @param string $newPassword Nueva contraseña
+     * @return bool True si se actualizó correctamente
+     */
+    public static function updatePassword($id, $newPassword)
+    {
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+        return $stmt->execute([
+            password_hash($newPassword, PASSWORD_DEFAULT),
+            $id
+        ]);
+    }
 }

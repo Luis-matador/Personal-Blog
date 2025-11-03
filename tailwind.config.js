@@ -1,4 +1,10 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
+  content: [
+    "./views/**/*.php",
+    "./public/**/*.{html,js}",
+    "./controllers/**/*.php"
+  ],
   darkMode: 'class',
   theme: {
     extend: {
@@ -8,9 +14,8 @@ module.exports = {
           "500":"#3b82f6","600":"#2563eb","700":"#1d4ed8","800":"#1e40af","900":"#1e3a8a","950":"#172554"
         }
       },
-      transform: ['hover'],
-      transitionProperty: {
-        'all': 'all'
+      scale: {
+        '102': '1.02',
       }
     },
     fontFamily: {
@@ -25,5 +30,6 @@ module.exports = {
         'Segoe UI Symbol', 'Noto Color Emoji'
       ]
     }
-  }
+  },
+  plugins: [],
 }

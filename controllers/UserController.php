@@ -139,6 +139,147 @@ class UserController
         exit;
     }
 
+    // Crear usuario desde admin
+    public function adminCreate()
+    {
+        $username = trim($_POST['username'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $errors = [];
+
+        // Validaciones
+        if (empty($username)) {
+            $errors[] = "El nombre de usuario es obligatorio.";
+        }
+        if (empty($email)) {
+            $errors[] = "El email es obligatorio.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "El email no es válido.";
+        }
+
+        if ($errors) {
+            $_SESSION['flash_error'] = implode('<br>', $errors);
+            redirect(url('admin/users'));
+            return;
+        }
+
+        require_once __DIR__ . '/../models/User.php';
+        $existingUser = User::getByEmail($email);
+        if ($existingUser) {
+            $_SESSION['flash_error'] = "El email ya está registrado.";
+            redirect(url('admin/users'));
+            return;
+        }
+
+        // Crear con contraseña por defecto
+        $defaultPassword = 'password123';
+        $newUser = User::create([
+            'username' => $username,
+            'email' => $email,
+            'password' => $defaultPassword
+        ]);
+
+        if ($newUser) {
+            $_SESSION['flash_success'] = "Usuario creado correctamente. Contraseña por defecto: $defaultPassword";
+        } else {
+            $_SESSION['flash_error'] = "Error al crear el usuario.";
+        }
+        redirect(url('admin/users'));
+    }
+
+    // Actualizar usuario desde admin
+    public function adminUpdate($id)
+    {
+        $username = trim($_POST['username'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $errors = [];
+
+        // Validaciones
+        if (empty($username)) {
+            $errors[] = "El nombre de usuario es obligatorio.";
+        }
+        if (empty($email)) {
+            $errors[] = "El email es obligatorio.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "El email no es válido.";
+        }
+
+        if ($errors) {
+            $_SESSION['flash_error'] = implode('<br>', $errors);
+            redirect(url('admin/users'));
+            return;
+        }
+
+        require_once __DIR__ . '/../models/User.php';
+        $result = User::update($id, [
+            'username' => $username,
+            'email' => $email
+        ]);
+
+        if ($result) {
+            $_SESSION['flash_success'] = "Usuario actualizado correctamente.";
+        } else {
+            $_SESSION['flash_error'] = "Error al actualizar el usuario.";
+        }
+        redirect(url('admin/users'));
+    }
+
+    // Eliminar usuario desde admin
+    public function adminDelete($id)
+    {
+        require_once __DIR__ . '/../models/User.php';
+        
+        // No permitir eliminar el usuario actual
+        if ($id == $_SESSION['user_id']) {
+            $_SESSION['flash_error'] = "No puedes eliminar tu propio usuario.";
+            redirect(url('admin/users'));
+            return;
+        }
+
+        $result = User::delete($id);
+
+        if ($result) {
+            $_SESSION['flash_success'] = "Usuario eliminado correctamente.";
+        } else {
+            $_SESSION['flash_error'] = "Error al eliminar el usuario.";
+        }
+        redirect(url('admin/users'));
+    }
+
+    // Cambiar contraseña de usuario desde admin
+    public function adminChangePassword($id)
+    {
+        $newPassword = trim($_POST['new_password'] ?? '');
+        $confirmPassword = trim($_POST['confirm_password'] ?? '');
+        $errors = [];
+
+        // Validaciones
+        if (empty($newPassword)) {
+            $errors[] = "La nueva contraseña es obligatoria.";
+        } elseif (strlen($newPassword) < 6) {
+            $errors[] = "La contraseña debe tener al menos 6 caracteres.";
+        }
+        
+        if ($newPassword !== $confirmPassword) {
+            $errors[] = "Las contraseñas no coinciden.";
+        }
+
+        if ($errors) {
+            $_SESSION['flash_error'] = implode('<br>', $errors);
+            redirect(url('admin/users'));
+            return;
+        }
+
+        require_once __DIR__ . '/../models/User.php';
+        $result = User::updatePassword($id, $newPassword);
+
+        if ($result) {
+            $_SESSION['flash_success'] = "Contraseña actualizada correctamente.";
+        } else {
+            $_SESSION['flash_error'] = "Error al actualizar la contraseña.";
+        }
+        redirect(url('admin/users'));
+    }
+
     /**
      * Maneja errores de forma centralizada
      * @param Exception $e Excepción capturada
