@@ -13,22 +13,21 @@ function validateCreatePostForm() {
     const title = document.getElementById('title');
     if (!title.value.trim()) {
       errors.push('El título es obligatorio');
-    } else if (title.value.length > 50) {
-      errors.push('El título no puede superar los 50 caracteres');
+    } else if (title.value.length > 30) {
+      errors.push('El título no puede superar los 30 caracteres');
     }
 
     // Validar descripción
     const descripcion = document.getElementById('descripcion');
     if (!descripcion.value.trim()) {
-      errors.push('La descripcion es obligatoria');
-    } else if (descripcion.value.length > 100) {
-      errors.push('La descripcion no puede superar los 100 caracteres');
+      errors.push('La descripción es obligatoria');
+    } else if (descripcion.value.length > 60) {
+      errors.push('La descripción no puede superar los 60 caracteres');
     }
 
-    // Validar contenido (TinyMCE)
-    const contentEditor = tinymce.get('content');
-    const content = contentEditor ? contentEditor.getContent() : '';
-    if (!content || content.trim() === '' || content === '<p></p>' || content === '<p><br></p>') {
+    // Validar contenido (Quill)
+    const contentInput = document.getElementById('content');
+    if (!contentInput || !contentInput.value.trim() || contentInput.value === '<p><br></p>') {
       errors.push('El contenido es obligatorio');
     }
 
@@ -37,9 +36,14 @@ function validateCreatePostForm() {
     if (imageInput && imageInput.files.length > 0) {
       const file = imageInput.files[0];
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
 
       if (!allowedTypes.includes(file.type)) {
         errors.push('El tipo de imagen no es válido (solo jpg, png, gif, webp)');
+      }
+      
+      if (file.size > maxSize) {
+        errors.push('La imagen no puede superar los 5MB');
       }
     }
 
@@ -69,17 +73,17 @@ function validateEditPostForm() {
     // Validar título
     const title = document.getElementById('title');
     if (!title.value.trim()) {
-      errors.push('El t�tulo es obligatorio');
-    } else if (title.value.length > 50) {
-      errors.push('El t�tulo no puede superar los 50 caracteres');
+      errors.push('El título es obligatorio');
+    } else if (title.value.length > 30) {
+      errors.push('El título no puede superar los 30 caracteres');
     }
 
     // Validar descripción
     const descripcion = document.getElementById('descripcion');
     if (!descripcion.value.trim()) {
       errors.push('La descripción es obligatoria');
-    } else if (descripcion.value.length > 100) {
-      errors.push('La descripción no puede superar los 100 caracteres');
+    } else if (descripcion.value.length > 60) {
+      errors.push('La descripción no puede superar los 60 caracteres');
     }
 
     // Validar imagen si se ha seleccionado una nueva
@@ -87,9 +91,14 @@ function validateEditPostForm() {
     if (imageInput && imageInput.files.length > 0) {
       const file = imageInput.files[0];
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
 
       if (!allowedTypes.includes(file.type)) {
-        errors.push('El tipo de imagen no es v�lido (solo jpg, png, gif, webp)');
+        errors.push('El tipo de imagen no es válido (solo jpg, png, gif, webp)');
+      }
+      
+      if (file.size > maxSize) {
+        errors.push('La imagen no puede superar los 5MB');
       }
     }
 
@@ -98,7 +107,7 @@ function validateEditPostForm() {
       e.preventDefault();
       Swal.fire({
         icon: 'error',
-        title: 'Errores de validaci�n',
+        title: 'Errores de validación',
         html: '<ul class="text-left">' + errors.map(err => '<li>' + err + '</li>').join('') + '</ul>',
         background: '#1a202c',
         color: '#f1f5f9',
@@ -108,8 +117,93 @@ function validateEditPostForm() {
   });
 }
 
+// Validar formularios de usuario (login/registro)
+function validateUserForms() {
+  // Validar login
+  const loginForm = document.querySelector('form[action*="authenticate"]');
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      let errors = [];
+      
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      
+      if (!email.value.trim()) {
+        errors.push('El email es obligatorio');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        errors.push('El email no es válido');
+      }
+      
+      if (!password.value.trim()) {
+        errors.push('La contraseña es obligatoria');
+      }
+      
+      if (errors.length > 0) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'error',
+          title: 'Errores de validación',
+          html: '<ul class="text-left">' + errors.map(err => '<li>' + err + '</li>').join('') + '</ul>',
+          background: '#1a202c',
+          color: '#f1f5f9',
+          confirmButtonColor: '#4f46e5'
+        });
+      }
+    });
+  }
+
+  // Validar registro
+  const registerForm = document.querySelector('form[action*="register"]');
+  if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+      let errors = [];
+      
+      const username = document.getElementById('username');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const passwordConfirm = document.getElementById('password_confirm');
+      
+      if (!username.value.trim()) {
+        errors.push('El nombre de usuario es obligatorio');
+      } else if (username.value.length < 3) {
+        errors.push('El nombre de usuario debe tener al menos 3 caracteres');
+      }
+      
+      if (!email.value.trim()) {
+        errors.push('El email es obligatorio');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        errors.push('El email no es válido');
+      }
+      
+      if (!password.value.trim()) {
+        errors.push('La contraseña es obligatoria');
+      } else if (password.value.length < 6) {
+        errors.push('La contraseña debe tener al menos 6 caracteres');
+      }
+      
+      if (password.value !== passwordConfirm.value) {
+        errors.push('Las contraseñas no coinciden');
+      }
+      
+      if (errors.length > 0) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'error',
+          title: 'Errores de validación',
+          html: '<ul class="text-left">' + errors.map(err => '<li>' + err + '</li>').join('') + '</ul>',
+          background: '#1a202c',
+          color: '#f1f5f9',
+          confirmButtonColor: '#4f46e5'
+        });
+      }
+    });
+  }
+}
+
+// Inicializar validaciones cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
   validateCreatePostForm();
   validateEditPostForm();
-  setupImageValidation();
+  validateUserForms();
 });
+

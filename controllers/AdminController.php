@@ -3,64 +3,42 @@
  * Controlador para gestionar el panel de administración
  * Métodos:
  * - index(): mostrar panel principal de administración
- * - checkAccess(): verificar acceso con clave
+ * - isAdmin(): verificar que el usuario tenga rol de administrador
  */
+
+require_once __DIR__ . '/../includes/functions.php';
 
 class AdminController
 {
-    private const ADMIN_PASSWORD = '1234';
-
-    // Verifica si el usuario ha ingresado la clave de admin
-    private function checkAccess()
+    // Verifica si el usuario es administrador
+    private function isAdmin()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
         // Verificar si el usuario está autenticado
         if (!isset($_SESSION['user_id'])) {
             header('Location: ' . url('login'));
             exit;
         }
 
-        // Verificar si ya tiene acceso de admin en esta sesión
-        if (isset($_SESSION['admin_access']) && $_SESSION['admin_access'] === true) {
-            return true;
+        // Verificar si el usuario tiene rol de admin
+        if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+            http_response_code(403);
+            $pageTitle = 'Acceso Denegado';
+            $errorMessage = 'No tienes permisos para acceder a esta sección.';
+            ob_start();
+            include __DIR__ . '/../views/errors/403.php';
+            $content = ob_get_clean();
+            include __DIR__ . '/../views/layouts/main.php';
+            exit;
         }
 
-        // Si se envió el formulario de clave
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_password'])) {
-            $password = $_POST['admin_password'] ?? '';
-            
-            if ($password === self::ADMIN_PASSWORD) {
-                $_SESSION['admin_access'] = true;
-                return 'success'; // Indicar acceso exitoso
-            } else {
-                return 'incorrect';
-            }
-        }
-
-        return false;
+        return true;
     }
 
     // Muestra el panel principal de administración
     public function index()
     {
-        $access = $this->checkAccess();
-        
-        // Si no tiene acceso, mostrar formulario de clave
-        if ($access !== true && $access !== 'success') {
-            $error = ($access === 'incorrect') ? 'Clave incorrecta' : null;
-            $pageTitle = 'Acceso a Administración';
-            ob_start();
-            include __DIR__ . '/../views/admin/access.php';
-            $content = ob_get_clean();
-            include __DIR__ . '/../views/layouts/main.php';
-            return;
-        }
+        $this->isAdmin();
 
-        // Si tiene acceso, mostrar panel de admin
-        $showSuccessAlert = ($access === 'success'); // Mostrar alerta si acaba de acceder
         $pageTitle = 'Panel de Administración';
         ob_start();
         include __DIR__ . '/../views/admin/index.php';
@@ -71,12 +49,7 @@ class AdminController
     // Muestra la gestión de usuarios
     public function users()
     {
-        $access = $this->checkAccess();
-        
-        if ($access !== true) {
-            header('Location: ' . url('admin'));
-            exit;
-        }
+        $this->isAdmin();
 
         require_once __DIR__ . '/../models/User.php';
         $users = User::all();
@@ -91,12 +64,7 @@ class AdminController
     // Muestra la gestión de posts
     public function posts()
     {
-        $access = $this->checkAccess();
-        
-        if ($access !== true) {
-            header('Location: ' . url('admin'));
-            exit;
-        }
+        $this->isAdmin();
 
         require_once __DIR__ . '/../models/Post.php';
         $posts = Post::allWithAuthors();
@@ -111,11 +79,9 @@ class AdminController
     // Cerrar sesión de admin (mantiene la sesión de usuario)
     public function logout()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        unset($_SESSION['admin_access']);
+        // Ahora solo cierra la sesión completamente
+        session_unset();
+        session_destroy();
         header('Location: ' . url());
         exit;
     }

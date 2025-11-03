@@ -80,7 +80,6 @@
         <!-- Footer con acciones -->
         <?php
         require_once __DIR__ . '/../../includes/functions.php';
-        if (session_status() === PHP_SESSION_NONE) session_start();
         if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $post->user_id): ?>
             <div class="bg-gray-800/50 border-t border-gray-700 p-4">
                 <div class="flex flex-wrap gap-3 justify-end">

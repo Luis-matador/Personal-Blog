@@ -47,30 +47,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
             </svg>
-            Salir del panel de administración
+            Cerrar sesión
         </a>
     </div>
 </div>
-
-<?php if (isset($showSuccessAlert) && $showSuccessAlert): ?>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        title: '¡Acceso exitoso!',
-        text: 'Has accedido correctamente al panel de administración',
-        icon: 'success',
-        timer: 2500,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        background: '#1a202c',
-        color: '#f1f5f9',
-        iconColor: '#22c55e',
-        customClass: {
-            popup: 'rounded-lg shadow-lg',
-            title: 'font-bold',
-            timerProgressBar: 'bg-green-700'
-        }
-    });
-});
-</script>
-<?php endif; ?>

@@ -9,6 +9,8 @@
  * - logout(): cerrar sesión
  */
 
+require_once __DIR__ . '/../includes/functions.php';
+
 class UserController
 {
     // Muestra el formulario de login
@@ -53,7 +55,7 @@ class UserController
             if ($user) {
                 $_SESSION['user_id'] = $user->id;
                 $_SESSION['username'] = $user->username;
-                require_once __DIR__ . '/../includes/functions.php';
+                $_SESSION['is_admin'] = $user->is_admin;
                 flashMessage('success', '¡Bienvenido, ' . htmlspecialchars($user->username) . '! Has iniciado sesión.');
                 redirect(url());
             } else {
@@ -82,8 +84,10 @@ class UserController
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $password_confirm = $_POST['password_confirm'] ?? '';
+        $is_admin = isset($_POST['is_admin']) ? 1 : 0;
+        $admin_password = trim($_POST['admin_password'] ?? '');
         $errors = [];
-        $old = ['username' => $username, 'email' => $email];
+        $old = ['username' => $username, 'email' => $email, 'is_admin' => $is_admin];
 
         // Validaciones
         if (empty($username)) {
@@ -99,6 +103,14 @@ class UserController
         }
         if ($password !== $password_confirm) {
             $errors[] = "Las contraseñas no coinciden.";
+        }
+
+        // Validar contraseña de administrador si se marcó el checkbox
+        if ($is_admin) {
+            require_once __DIR__ . '/../models/User.php';
+            if (!User::verifyAdminPassword($admin_password)) {
+                $errors[] = "La contraseña de administrador es incorrecta.";
+            }
         }
 
         // Si hay errores, vuelve a mostrar el formulario con mensajes
@@ -117,11 +129,11 @@ class UserController
         $newUser = User::create([
             'username' => $username,
             'email' => $email,
-            'password' => $password
+            'password' => $password,
+            'is_admin' => $is_admin
         ]);
 
         if ($newUser) {
-            require_once __DIR__ . '/../includes/functions.php';
             flashMessage('success', 'Usuario registrado correctamente. Ahora puedes iniciar sesión.');
             redirect(url('login'));
         } else {
@@ -286,10 +298,6 @@ class UserController
      */
     private function handleError($e)
     {
-        // Log del error
-        error_log('[' . date('Y-m-d H:i:s') . '] Error en UserController: ' . $e->getMessage());
-        error_log('Trace: ' . $e->getTraceAsString());
-        
         // Mostrar página de error 500
         http_response_code(500);
         $errorMessage = ini_get('display_errors') ? $e->getMessage() : '';

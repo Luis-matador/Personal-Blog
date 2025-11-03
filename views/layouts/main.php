@@ -32,7 +32,7 @@
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
     <!-- Header Moderno -->
-    <header class="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-[100] border-b border-purple-700">
+    <header class="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-[100] ">
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex justify-between items-center gap-4">
                 <!-- Logo -->
@@ -64,6 +64,7 @@
                                 <span>Crear post</span>
                             </span>
                         </a>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
                         <a href="<?= url('admin') ?>" class="px-3 lg:px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] whitespace-nowrap">
                             <span class="flex items-center space-x-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,6 +74,7 @@
                                 <span>Admin</span>
                             </span>
                         </a>
+                        <?php endif; ?>
                         
                         <!-- Usuario logueado -->
                         <div class="flex items-center space-x-3 pl-3 ml-2 border-l border-indigo-700">
@@ -136,7 +138,9 @@
                         <span class="text-xs bg-indigo-600 px-2 py-1 rounded-full"><?= $postCount ?> <?= $postCount == 1 ? 'post' : 'posts' ?></span>
                     </div>
                     <a href="<?= url('post/create') ?>" class="block px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 transition font-semibold">Crear post</a>
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
                     <a href="<?= url('admin') ?>" class="block px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-500 transition font-semibold">Administrador</a>
+                    <?php endif; ?>
                     <a href="<?= url('logout') ?>" class="block px-4 py-2 rounded-lg text-red-400 hover:bg-red-600/20 transition">Salir</a>
                 <?php else: ?>
                     <a href="<?= url('login') ?>" class="block px-4 py-2 rounded-lg text-gray-200 hover:bg-white/10 transition">Login</a>

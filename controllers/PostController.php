@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../includes/functions.php';
+
 class PostController
 {
     // Muestra la lista de posts
@@ -67,7 +69,6 @@ class PostController
     $title = trim($_POST['title'] ?? '');
     $descripcion = trim($_POST['descripcion'] ?? '');
     $content = $_POST['content'] ?? '';
-    error_log('POST content: ' . $content);
         $errors = [];
         $old = ['title' => $title, 'descripcion' => $descripcion, 'content' => $content];
 
@@ -89,8 +90,6 @@ class PostController
         // Validación y procesamiento de imagen
         $imagePath = null;
         if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
-            require_once __DIR__ . '/../includes/functions.php';
-            
             if (validateImage($_FILES['image'], $errors)) {
                 $imagePath = uploadImage($_FILES['image']);
                 if (!$imagePath) {
@@ -132,7 +131,7 @@ class PostController
         $post = Post::getById($id);
         
         // Verificar si el usuario es admin o dueño del post
-        $isAdmin = isset($_SESSION['admin_access']) && $_SESSION['admin_access'] === true;
+        $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
         
         if (!$post || (!$isAdmin && $post->user_id != $_SESSION['user_id'])) {
             http_response_code(403);
@@ -160,7 +159,7 @@ class PostController
         $post = Post::getById($id);
         
         // Verificar si el usuario es admin o dueño del post
-        $isAdmin = isset($_SESSION['admin_access']) && $_SESSION['admin_access'] === true;
+        $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
         
         if (!$post || (!$isAdmin && $post->user_id != $_SESSION['user_id'])) {
             http_response_code(403);
@@ -192,8 +191,6 @@ class PostController
         // Validación y procesamiento de imagen
         $imagePath = $post->image; // Mantener la imagen actual por defecto
         if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
-            require_once __DIR__ . '/../includes/functions.php';
-            
             if (validateImage($_FILES['image'], $errors)) {
                 $imagePath = uploadImage($_FILES['image'], $post->image);
                 if (!$imagePath) {
@@ -214,7 +211,6 @@ class PostController
         ]);
 
         if ($result) {
-            require_once __DIR__ . '/../includes/functions.php';
             flashMessage('success', 'Post actualizado correctamente.');
             
             // Redirigir según si es admin o no
@@ -254,7 +250,6 @@ class PostController
         }
         
         $result = $post->delete();
-        require_once __DIR__ . '/../includes/functions.php';
         if ($result) {
             flashMessage('success', 'Post eliminado correctamente.');
             redirect(url());
@@ -322,10 +317,6 @@ class PostController
      */
     private function handleError($e)
     {
-        // Log del error
-        error_log('[' . date('Y-m-d H:i:s') . '] Error en PostController: ' . $e->getMessage());
-        error_log('Trace: ' . $e->getTraceAsString());
-        
         // Mostrar página de error 500
         http_response_code(500);
         $errorMessage = ini_get('display_errors') ? $e->getMessage() : '';

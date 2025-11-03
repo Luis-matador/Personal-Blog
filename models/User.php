@@ -6,7 +6,11 @@ class User
     public $username;
     public $email;
     public $password;
+    public $is_admin;
     public $created_at;
+
+    // Contraseña maestra para crear administradores
+    private const ADMIN_MASTER_PASSWORD = 'admin2024';
 
     public function __construct($data = [])
     {
@@ -14,7 +18,18 @@ class User
         $this->username   = $data['username'] ?? null;
         $this->email      = $data['email'] ?? null;
         $this->password   = $data['password'] ?? null;
+        $this->is_admin   = isset($data['is_admin']) ? (bool)$data['is_admin'] : false;
         $this->created_at = $data['created_at'] ?? null;
+    }
+
+    /**
+     * Verifica si la contraseña maestra de admin es correcta
+     * @param string $password Contraseña a verificar
+     * @return bool True si la contraseña es correcta
+     */
+    public static function verifyAdminPassword($password)
+    {
+        return $password === self::ADMIN_MASTER_PASSWORD;
     }
 
     public static function getById($id)
@@ -41,11 +56,15 @@ class User
     {
         require_once __DIR__ . '/../includes/Database.php';
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+        
+        $isAdmin = isset($data['is_admin']) ? (int)$data['is_admin'] : 0;
+        
+        $stmt = $db->prepare("INSERT INTO users (username, email, password, is_admin) VALUES (?, ?, ?, ?)");
         $result = $stmt->execute([
             $data['username'],
             $data['email'],
-            password_hash($data['password'], PASSWORD_DEFAULT)
+            password_hash($data['password'], PASSWORD_DEFAULT),
+            $isAdmin
         ]);
         if ($result) {
             $id = $db->lastInsertId();
@@ -140,7 +159,6 @@ class User
         } catch (Exception $e) {
             // Si hay error, revertir cambios
             $db->rollBack();
-            error_log("Error al eliminar usuario: " . $e->getMessage());
             return false;
         }
     }

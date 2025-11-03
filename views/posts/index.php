@@ -25,7 +25,7 @@
 <?php if (empty($posts)): ?>
     <div class="bg-gradient-to-br from-gray-800 to-gray-900 text-gray-300 p-8 rounded-2xl shadow-xl text-center max-w-2xl mx-auto border border-gray-700">
         <!-- Ilustración SVG -->
-    <svg class="mx-auto mb-4 text-indigo-500 custom-size-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="w-30 h-30 mx-auto mb-4 text-indigo-500 custom-size-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
         </svg>
         
@@ -34,7 +34,7 @@
         
         <?php if (isset($_SESSION['user_id'])): ?>
             <div class="flex justify-center">
-                <a href="<?= url('post/create') ?>" class="flex items-center gap-3 px- py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                <a href="<?= url('post/create') ?>" class="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
                     </svg>

@@ -36,6 +36,24 @@ require_once __DIR__ . '/../../includes/functions.php';
    <input class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500"
      type="password" name="password_confirm" id="password_confirm" required autocomplete="new-password" value="">
       </div>
+      
+      <!-- Opción para registrarse como administrador -->
+      <div class="mb-4">
+        <label class="flex items-center text-gray-300 cursor-pointer">
+          <input type="checkbox" name="is_admin" id="is_admin" class="w-4 h-4 text-indigo-600 bg-gray-700 border-gray-600 rounded focus:ring-indigo-500"
+            <?= isset($old['is_admin']) && $old['is_admin'] ? 'checked' : '' ?>>
+          <span class="ml-2">Registrarse como Administrador</span>
+        </label>
+      </div>
+
+      <!-- Campo de contraseña de administrador (visible solo si el checkbox está marcado) -->
+      <div class="mb-6" id="admin_password_field" style="display: none;">
+        <label class="block text-gray-300 mb-2" for="admin_password">Contraseña de Administrador</label>
+        <input class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500"
+          type="password" name="admin_password" id="admin_password" autocomplete="off" value="">
+        <p class="text-sm text-gray-400 mt-1">Debes conocer la contraseña maestra para registrarte como administrador.</p>
+      </div>
+
       <button class="w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 transition shadow-lg transform hover:scale-[1.02]" type="submit">
         Registrarse
       </button>
@@ -46,3 +64,26 @@ require_once __DIR__ . '/../../includes/functions.php';
     </p>
   </div>
 </div>
+
+<script>
+// Mostrar/ocultar campo de contraseña de administrador
+document.getElementById('is_admin').addEventListener('change', function() {
+    const adminPasswordField = document.getElementById('admin_password_field');
+    const adminPasswordInput = document.getElementById('admin_password');
+    
+    if (this.checked) {
+        adminPasswordField.style.display = 'block';
+        adminPasswordInput.required = true;
+    } else {
+        adminPasswordField.style.display = 'none';
+        adminPasswordInput.required = false;
+        adminPasswordInput.value = '';
+    }
+});
+
+// Verificar el estado inicial del checkbox (para cuando hay errores y se recarga el formulario)
+if (document.getElementById('is_admin').checked) {
+    document.getElementById('admin_password_field').style.display = 'block';
+    document.getElementById('admin_password').required = true;
+}
+</script>
