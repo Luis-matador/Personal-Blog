@@ -50,6 +50,7 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">ID</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Usuario</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Email</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Rol</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Fecha de registro</th>
                         <th class="px-4 py-3 text-center text-xs font-semibold text-gray-300 uppercase tracking-wider">Acciones</th>
                     </tr>
@@ -60,13 +61,28 @@
                             <td class="px-4 py-3 text-gray-300"><?= htmlspecialchars($user->id) ?></td>
                             <td class="px-4 py-3 text-white font-medium"><?= htmlspecialchars($user->username) ?></td>
                             <td class="px-4 py-3 text-gray-300"><?= htmlspecialchars($user->email) ?></td>
+                            <td class="px-4 py-3">
+                                <?php if ($user->is_admin): ?>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200 border border-purple-700">
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Admin
+                                    </span>
+                                <?php else: ?>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gray-700 text-gray-300">
+                                        Usuario
+                                    </span>
+                                <?php endif; ?>
+                            </td>
                             <td class="px-4 py-3 text-gray-400"><?= date('d/m/Y', strtotime($user->created_at)) ?></td>
                             <td class="px-4 py-3">
                                 <div class="flex gap-2 justify-center">
                                     <button onclick='openEditModal(<?= json_encode([
                                         "id" => $user->id,
                                         "username" => $user->username,
-                                        "email" => $user->email
+                                        "email" => $user->email,
+                                        "is_admin" => $user->is_admin
                                     ]) ?>)' 
                                             class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
                                         Editar
@@ -137,6 +153,14 @@
                 <input type="email" name="email" id="edit-email" required
                        class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500">
             </div>
+            <div class="mb-4">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" name="is_admin" id="edit-is-admin" value="1"
+                           class="w-4 h-4 rounded border-gray-700 bg-gray-900 text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-gray-300">Rol de Administrador</span>
+                </label>
+                <p class="text-xs text-gray-400 mt-1 ml-6">Los administradores pueden gestionar todos los posts y usuarios</p>
+            </div>
             <div class="flex gap-3 justify-end">
                 <button type="button" onclick="document.getElementById('edit-user-modal').classList.add('hidden')"
                         class="px-4 py-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition">
@@ -158,12 +182,14 @@
             <div class="mb-4">
                 <label class="block text-gray-300 mb-2" for="new-password">Nueva contraseña</label>
                 <input type="password" name="new_password" id="new-password" required minlength="6"
+                       autocomplete="new-password" data-form-type="other"
                        class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500">
                 <p class="text-xs text-gray-400 mt-1">Mínimo 6 caracteres</p>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-300 mb-2" for="confirm-password">Confirmar contraseña</label>
                 <input type="password" name="confirm_password" id="confirm-password" required minlength="6"
+                       autocomplete="new-password" data-form-type="other"
                        class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500">
             </div>
             <div class="flex gap-3 justify-end">
@@ -184,6 +210,7 @@ function openEditModal(user) {
     document.getElementById('edit-id').value = user.id;
     document.getElementById('edit-username').value = user.username;
     document.getElementById('edit-email').value = user.email;
+    document.getElementById('edit-is-admin').checked = user.is_admin ? true : false;
     document.getElementById('edit-user-form').action = '<?= url('admin/users/') ?>' + user.id + '/update';
     document.getElementById('edit-user-modal').classList.remove('hidden');
 }

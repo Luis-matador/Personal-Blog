@@ -17,7 +17,6 @@
     <script src="<?= asset('js/alerts.js') ?>"></script>
     <script src="<?= asset('js/validation.js') ?>"></script>
     <style>
-        /* Asegurar que el header siempre sea visible */
         header {
             display: block !important;
             visibility: visible !important;
@@ -31,8 +30,8 @@
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
-    <!-- Header Moderno -->
-    <header class="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-[100] ">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-[100]">
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex justify-between items-center gap-4">
                 <!-- Logo -->
@@ -45,7 +44,7 @@
                     <span class="text-xl lg:text-2xl font-extrabold text-white tracking-tight whitespace-nowrap">Mi Blog Personal</span>
                 </a>
                 
-                <!-- Navegación Desktop -->
+                <!-- Navbar -->
                 <nav class="hidden md:flex items-center space-x-3 lg:space-x-4">
                     <a href="<?= url() ?>" class="px-3 lg:px-4 py-2 rounded-lg text-gray-200 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium whitespace-nowrap">
                         <span class="flex items-center space-x-2">
@@ -112,7 +111,7 @@
                     <?php endif; ?>
                 </nav>
                 
-                <!-- Menú móvil hamburguesa -->
+                <!-- Icono menú móvil hamburguesa -->
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-white/10 transition">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

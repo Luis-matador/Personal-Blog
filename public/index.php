@@ -38,6 +38,7 @@ $router->add('POST', '/post/{id}/delete', [new PostController, 'delete']);
 // Rutas de autenticación (puedes añadir más según avances)
 $router->add('GET', '/login', [new UserController, 'login']);
 $router->add('POST', '/login', [new UserController, 'authenticate']);
+$router->add('POST', '/change-password-first-time', [new UserController, 'changePasswordFirstTime']);
 $router->add('GET', '/register', [new UserController, 'register']);
 $router->add('POST', '/register', [new UserController, 'store']);
 $router->add('GET', '/logout', [new UserController, 'logout']);

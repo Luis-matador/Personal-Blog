@@ -14,7 +14,7 @@ require_once __DIR__ . '/../includes/functions.php';
 class UserController
 {
     // Muestra el formulario de login
-    public function login($errors = [], $old = [])
+    public function login($errors = [], $old = [], $mustChangePassword = false)
     {
         $pageTitle = 'Login';
         ob_start();
@@ -53,6 +53,15 @@ class UserController
             $user = User::authenticate($email, $password);
 
             if ($user) {
+                // Verificar si debe cambiar contraseña
+                if ($user->must_change_password) {
+                    $_SESSION['temp_user_id'] = $user->id;
+                    $_SESSION['temp_username'] = $user->username;
+                    $_SESSION['must_change_password'] = true;
+                    // Retornar a login con flag especial
+                    return $this->login([], $old, true);
+                }
+                
                 $_SESSION['user_id'] = $user->id;
                 $_SESSION['username'] = $user->username;
                 $_SESSION['is_admin'] = $user->is_admin;
@@ -142,6 +151,61 @@ class UserController
         }
     }
 
+    // Procesa el cambio de contraseña obligatorio
+    public function changePasswordFirstTime()
+    {
+        try {
+            if (!isset($_SESSION['must_change_password']) || !$_SESSION['must_change_password']) {
+                redirect(url('login'));
+                return;
+            }
+
+            $newPassword = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            $errors = [];
+
+            // Validaciones
+            if (empty($newPassword)) {
+                $errors[] = "La nueva contraseña es obligatoria.";
+            } elseif (strlen($newPassword) < 6) {
+                $errors[] = "La contraseña debe tener al menos 6 caracteres.";
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                $errors[] = "Las contraseñas no coinciden.";
+            }
+
+            if ($errors) {
+                echo json_encode(['success' => false, 'message' => implode('<br>', $errors)]);
+                return;
+            }
+
+            // Actualizar contraseña
+            require_once __DIR__ . '/../models/User.php';
+            $userId = $_SESSION['temp_user_id'];
+            $result = User::changePasswordFirstTime($userId, $newPassword);
+
+            if ($result) {
+                // Limpiar sesiones temporales y establecer sesión real
+                $_SESSION['user_id'] = $_SESSION['temp_user_id'];
+                $_SESSION['username'] = $_SESSION['temp_username'];
+                unset($_SESSION['temp_user_id']);
+                unset($_SESSION['temp_username']);
+                unset($_SESSION['must_change_password']);
+
+                // Cargar datos completos del usuario
+                $user = User::getById($_SESSION['user_id']);
+                $_SESSION['is_admin'] = $user->is_admin;
+
+                echo json_encode(['success' => true, 'message' => 'Contraseña actualizada correctamente.']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Error al actualizar la contraseña.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error del servidor.']);
+        }
+    }
+
     // Cierra la sesión del usuario
     public function logout()
     {
@@ -182,16 +246,17 @@ class UserController
             return;
         }
 
-        // Crear con contraseña por defecto
+        // Crear con contraseña por defecto y flag para forzar cambio
         $defaultPassword = 'password123';
         $newUser = User::create([
             'username' => $username,
             'email' => $email,
-            'password' => $defaultPassword
+            'password' => $defaultPassword,
+            'must_change_password' => 1  // Forzar cambio de contraseña en primer login
         ]);
 
         if ($newUser) {
-            $_SESSION['flash_success'] = "Usuario creado correctamente. Contraseña por defecto: $defaultPassword";
+            $_SESSION['flash_success'] = "Usuario creado correctamente. Contraseña por defecto: $defaultPassword (deberá cambiarla en el primer login)";
         } else {
             $_SESSION['flash_error'] = "Error al crear el usuario.";
         }
@@ -203,6 +268,7 @@ class UserController
     {
         $username = trim($_POST['username'] ?? '');
         $email = trim($_POST['email'] ?? '');
+        $is_admin = isset($_POST['is_admin']) ? 1 : 0;
         $errors = [];
 
         // Validaciones
@@ -224,7 +290,8 @@ class UserController
         require_once __DIR__ . '/../models/User.php';
         $result = User::update($id, [
             'username' => $username,
-            'email' => $email
+            'email' => $email,
+            'is_admin' => $is_admin
         ]);
 
         if ($result) {

@@ -7,6 +7,7 @@ class User
     public $email;
     public $password;
     public $is_admin;
+    public $must_change_password;
     public $created_at;
 
     // Contraseña maestra para crear administradores
@@ -19,6 +20,7 @@ class User
         $this->email      = $data['email'] ?? null;
         $this->password   = $data['password'] ?? null;
         $this->is_admin   = isset($data['is_admin']) ? (bool)$data['is_admin'] : false;
+        $this->must_change_password = isset($data['must_change_password']) ? (bool)$data['must_change_password'] : false;
         $this->created_at = $data['created_at'] ?? null;
     }
 
@@ -58,13 +60,15 @@ class User
         $db = Database::getInstance()->getConnection();
         
         $isAdmin = isset($data['is_admin']) ? (int)$data['is_admin'] : 0;
+        $mustChangePassword = isset($data['must_change_password']) ? (int)$data['must_change_password'] : 0;
         
-        $stmt = $db->prepare("INSERT INTO users (username, email, password, is_admin) VALUES (?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO users (username, email, password, is_admin, must_change_password) VALUES (?, ?, ?, ?, ?)");
         $result = $stmt->execute([
             $data['username'],
             $data['email'],
             password_hash($data['password'], PASSWORD_DEFAULT),
-            $isAdmin
+            $isAdmin,
+            $mustChangePassword
         ]);
         if ($result) {
             $id = $db->lastInsertId();
@@ -123,12 +127,24 @@ class User
     {
         require_once __DIR__ . '/../includes/Database.php';
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
-        return $stmt->execute([
-            $data['username'],
-            $data['email'],
-            $id
-        ]);
+        
+        // Si se proporciona is_admin, actualizar también ese campo
+        if (isset($data['is_admin'])) {
+            $stmt = $db->prepare("UPDATE users SET username = ?, email = ?, is_admin = ? WHERE id = ?");
+            return $stmt->execute([
+                $data['username'],
+                $data['email'],
+                (int)$data['is_admin'],
+                $id
+            ]);
+        } else {
+            $stmt = $db->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
+            return $stmt->execute([
+                $data['username'],
+                $data['email'],
+                $id
+            ]);
+        }
     }
 
     /**
@@ -174,6 +190,23 @@ class User
         require_once __DIR__ . '/../includes/Database.php';
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+        return $stmt->execute([
+            password_hash($newPassword, PASSWORD_DEFAULT),
+            $id
+        ]);
+    }
+
+    /**
+     * Actualiza la contraseña de un usuario y quita la flag de must_change_password
+     * @param int $id ID del usuario
+     * @param string $newPassword Nueva contraseña
+     * @return bool True si se actualizó correctamente
+     */
+    public static function changePasswordFirstTime($id, $newPassword)
+    {
+        require_once __DIR__ . '/../includes/Database.php';
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("UPDATE users SET password = ?, must_change_password = 0 WHERE id = ?");
         return $stmt->execute([
             password_hash($newPassword, PASSWORD_DEFAULT),
             $id

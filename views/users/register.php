@@ -29,12 +29,12 @@ require_once __DIR__ . '/../../includes/functions.php';
       <div class="mb-4">
         <label class="block text-gray-300 mb-2" for="password">Contraseña</label>
    <input class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500"
-     type="password" name="password" id="password" required autocomplete="new-password" value="">
+     type="password" name="password" id="password" required autocomplete="new-password" data-form-type="other" value="">
       </div>
       <div class="mb-6">
         <label class="block text-gray-300 mb-2" for="password_confirm">Repite la contraseña</label>
    <input class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500"
-     type="password" name="password_confirm" id="password_confirm" required autocomplete="new-password" value="">
+     type="password" name="password_confirm" id="password_confirm" required autocomplete="nope" data-form-type="other" value="">
       </div>
       
       <!-- Opción para registrarse como administrador -->
@@ -50,7 +50,7 @@ require_once __DIR__ . '/../../includes/functions.php';
       <div class="mb-6" id="admin_password_field" style="display: none;">
         <label class="block text-gray-300 mb-2" for="admin_password">Contraseña de Administrador</label>
         <input class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500"
-          type="password" name="admin_password" id="admin_password" autocomplete="off" value="">
+          type="password" name="admin_password" id="admin_password" autocomplete="new-password" data-form-type="other" value="">
         <p class="text-sm text-gray-400 mt-1">Debes conocer la contraseña maestra para registrarte como administrador.</p>
       </div>
 

@@ -25,10 +25,10 @@
     <article class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
         <!-- Imagen destacada -->
         <?php if (!empty($post->image)): ?>
-            <div class="w-full cursor-pointer group relative" onclick="openImageModal()">
+            <div class="w-full cursor-pointer relative" onclick="openImageModal()">
                 <img src="<?= asset(ltrim($post->image, '/')) ?>" 
                      alt="Imagen del post" 
-                     class="w-full block transition-transform duration-300 group-hover:scale-[1.02]"
+                     class="w-full block"
                      id="post-image">
             </div>
         <?php endif; ?>

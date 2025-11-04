@@ -24,7 +24,7 @@
       <div class="mb-6">
         <label class="block text-gray-300 mb-2" for="admin_password">Clave de Administración</label>
         <input class="w-full px-3 py-2 border border-gray-700 bg-gray-900 text-gray-100 rounded focus:outline-none focus:ring focus:border-indigo-500"
-               type="password" name="admin_password" id="admin_password" required autofocus>
+               type="password" name="admin_password" id="admin_password" required autofocus autocomplete="new-password" data-form-type="other">
       </div>
       <button class="w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 transition shadow-lg transform hover:scale-[1.02]" type="submit">
         Acceder
