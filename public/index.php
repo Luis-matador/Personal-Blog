@@ -1,12 +1,6 @@
 <?php
-/**
- * Punto de entrada único de la aplicación
- * Inicializa la configuración y el enrutador
- * Define las rutas disponibles
- * Ejecuta el controlador correspondiente a la ruta actual
- */
+// Punto de entrada de la aplicación
 
-// Mostrar errores en desarrollo (puedes quitar esto en producción)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -35,7 +29,7 @@ $router->add('GET', '/post/{id}/edit', [new PostController, 'edit']);
 $router->add('POST', '/post/{id}/update', [new PostController, 'update']);
 $router->add('POST', '/post/{id}/delete', [new PostController, 'delete']);
 
-// Rutas de autenticación (puedes añadir más según avances)
+// Rutas de autenticación
 $router->add('GET', '/login', [new UserController, 'login']);
 $router->add('POST', '/login', [new UserController, 'authenticate']);
 $router->add('POST', '/change-password-first-time', [new UserController, 'changePasswordFirstTime']);

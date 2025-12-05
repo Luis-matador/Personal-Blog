@@ -24,11 +24,7 @@ class User
         $this->created_at = $data['created_at'] ?? null;
     }
 
-    /**
-     * Verifica si la contraseña maestra de admin es correcta
-     * @param string $password Contraseña a verificar
-     * @return bool True si la contraseña es correcta
-     */
+    // Verifica contraseña maestra de admin
     public static function verifyAdminPassword($password)
     {
         return $password === self::ADMIN_MASTER_PASSWORD;
@@ -86,11 +82,7 @@ class User
         return null;
     }
 
-    /**
-     * Obtiene la cantidad de posts creados por un usuario
-     * @param int $userId ID del usuario
-     * @return int Cantidad de posts
-     */
+    // Contar posts de un usuario
     public static function getPostCount($userId)
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -101,10 +93,7 @@ class User
         return (int)$result['total'];
     }
 
-    /**
-     * Obtiene todos los usuarios
-     * @return array Array de objetos User
-     */
+    // Obtener todos los usuarios
     public static function all()
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -117,12 +106,7 @@ class User
         return $users;
     }
 
-    /**
-     * Actualiza los datos de un usuario (excepto la contraseña)
-     * @param int $id ID del usuario
-     * @param array $data Datos a actualizar
-     * @return bool True si se actualizó correctamente
-     */
+    // Actualizar usuario
     public static function update($id, $data)
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -147,11 +131,7 @@ class User
         }
     }
 
-    /**
-     * Elimina un usuario y todos sus posts asociados
-     * @param int $id ID del usuario
-     * @return bool True si se eliminó correctamente
-     */
+    // Eliminar usuario y sus posts
     public static function delete($id)
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -179,12 +159,7 @@ class User
         }
     }
 
-    /**
-     * Actualiza la contraseña de un usuario
-     * @param int $id ID del usuario
-     * @param string $newPassword Nueva contraseña
-     * @return bool True si se actualizó correctamente
-     */
+    // Actualizar contraseña
     public static function updatePassword($id, $newPassword)
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -196,12 +171,7 @@ class User
         ]);
     }
 
-    /**
-     * Actualiza la contraseña de un usuario y quita la flag de must_change_password
-     * @param int $id ID del usuario
-     * @param string $newPassword Nueva contraseña
-     * @return bool True si se actualizó correctamente
-     */
+    // Cambiar contraseña en primer login
     public static function changePasswordFirstTime($id, $newPassword)
     {
         require_once __DIR__ . '/../includes/Database.php';

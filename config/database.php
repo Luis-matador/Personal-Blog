@@ -1,11 +1,6 @@
 <?php
-/**
- * Configuración de la conexión a la base de datos
- * Define las constantes de conexión: DB_HOST, DB_NAME, DB_USER, DB_PASS
- * Crea y expone una instancia PDO para usar en toda la aplicación
- */
+// Configuración de conexión a base de datos
 
-// Configura estos valores según tu entorno
 if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
 if (!defined('DB_NAME')) define('DB_NAME', 'personal_blog');
 if (!defined('DB_USER')) define('DB_USER', 'root');
@@ -18,7 +13,6 @@ try {
         DB_USER,
         DB_PASS
     );
-    // Opciones recomendadas para PDO
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {

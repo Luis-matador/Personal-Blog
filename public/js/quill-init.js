@@ -3,13 +3,6 @@
  * Funciones reutilizables para crear y editar posts
  */
 
-/**
- * Inicializa el editor Quill en el elemento especificado
- * @param {string} containerSelector - Selector CSS del contenedor del editor
- * @param {string} textareaSelector - Selector CSS del textarea oculto para sincronización
- * @param {string} placeholder - Texto placeholder para el editor
- * @returns {Quill} Instancia del editor Quill
- */
 function initQuillEditor(containerSelector, textareaSelector, placeholder = 'Escribe el contenido de tu post aquí...') {
     const quill = new Quill(containerSelector, {
         theme: 'snow',
@@ -95,13 +88,7 @@ function setupColorIndicators() {
     updateColorIndicators();
 }
 
-/**
- * Configura el contador de caracteres para un campo input o textarea
- * @param {string} inputSelector - Selector CSS del campo de entrada
- * @param {string} counterSelector - Selector CSS del elemento contador
- * @param {number} maxLength - Longitud máxima permitida
- * @param {boolean} autoResize - Si es true, auto-redimensiona el textarea
- */
+
 function setupCharCounter(inputSelector, counterSelector, maxLength, autoResize = false) {
     const input = document.querySelector(inputSelector);
     const counter = document.querySelector(counterSelector);
@@ -122,12 +109,6 @@ function setupCharCounter(inputSelector, counterSelector, maxLength, autoResize 
     updateCounter();
 }
 
-/**
- * Configura la previsualización de imagen
- * @param {string} inputSelector - Selector CSS del input file
- * @param {string} buttonSelector - Selector CSS del botón de selección
- * @param {string} containerSelector - Selector CSS del contenedor de preview
- */
 function setupImagePreview(inputSelector, buttonSelector, containerSelector) {
     const fileInput = document.querySelector(inputSelector);
     const previewContainer = document.querySelector(containerSelector);

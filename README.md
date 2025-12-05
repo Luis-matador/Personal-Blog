@@ -1,198 +1,78 @@
-# 📝 Personal Blog - Sistema de Blog Personal en PHP
+# 📝 Personal Blog - Sistema de Blog en PHP
 
-Un sistema de blog completo desarrollado en PHP puro siguiendo el patrón **MVC** (Modelo-Vista-Controlador), con diseño moderno usando Tailwind CSS y funcionalidades avanzadas.
+Sistema de blog desarrollado en **PHP puro** siguiendo el patrón **MVC** (Modelo-Vista-Controlador).
 
----
-
-## 📋 Estado Actual del Proyecto
-
-### ✅ Completamente Implementado
-
-- [x] Sistema de autenticación completo (registro/login/logout) con sesiones seguras
-- [x] **Sistema de administrador con roles** (registro con contraseña maestra)
-- [x] CRUD completo de posts (crear, leer, editar, eliminar)
-- [x] **Vistas de crear/editar posts** con editor WYSIWYG (Quill.js)
-- [x] **Subida y gestión de imágenes** (validación tipo/tamaño, preview, eliminación)
-- [x] **Validación dual (JavaScript + PHP)** con mensajes en tiempo real
-- [x] **Botón eliminar** con confirmación visual (SweetAlert2)
-- [x] **Panel de administración** para gestionar usuarios y posts
-- [x] Sistema de rutas con URLs amigables
-- [x] Mensajes flash con SweetAlert2
-- [x] Protección de rutas por roles (admin/usuario)
-- [x] Estructura MVC profesional y optimizada
-- [x] Diseño responsive con Tailwind CSS
-- [x] Páginas de error personalizadas (404, 403, 500)
-
-### 🚧 Mejoras Futuras
-
-- [ ] Paginación en el listado de posts
-- [ ] Búsqueda avanzada de posts
-- [ ] Categorías y etiquetas
-- [ ] Sistema de comentarios
-- [ ] Edición de perfil de usuario
-- [ ] Recuperación de contraseña
-- [ ] Protección CSRF completa
-- [ ] API REST
-
----
-
-## ✨ Características Principales
-
-### 🔐 **Sistema de Roles y Administración**
-
-- **Registro de administradores**: Al registrarse, puedes marcar la opción de administrador ingresando la contraseña maestra (`admin2024`)
-- **Panel de administración**: Los administradores pueden:
-  - Ver y gestionar todos los usuarios
-  - Crear nuevos usuarios (admin o normales)
-  - Editar información de usuarios
-  - Cambiar contraseñas de usuarios
-  - Eliminar usuarios (con eliminación en cascada de sus posts)
-  - Ver y eliminar todos los posts
-- **Protección de rutas**: Páginas de error 403 para acceso no autorizado
-- **Persistencia**: El rol de administrador se guarda en la base de datos
-
-### 📰 **Gestión Completa de Posts**
-
-- ✅ **Crear** publicaciones con editor WYSIWYG (Quill.js con tema oscuro)
-- ✅ **Editar** publicaciones propias (o todas si eres admin)
-- ✅ **Eliminar** publicaciones con confirmación visual
-- ✅ **Listar** todos los posts con diseño moderno en cards
-- ✅ **Ver** post individual con contenido formateado
-- Título con límite de 30 caracteres
-- Descripción corta (máx. 60 caracteres) para previews
-- Editor de texto enriquecido con colores personalizados
-
-### 🖼️ **Sistema de Imágenes Avanzado**
-
-- Subida de imágenes destacadas para cada post
-- Validación de tipo de archivo (jpg, png, gif, webp)
-- Validación de tamaño máximo (5MB)
-- Preview de imagen antes de publicar
-- Eliminación automática de imagen anterior al actualizar
-- Nombres de archivo seguros con `uniqid()`
-- Muestra de imagen actual en modo edición
-
-### ✅ **Validación Dual (Cliente + Servidor)**
-
-- **JavaScript**: Validación en tiempo real con SweetAlert2
-- **PHP**: Validación completa en el servidor
-- Contador de caracteres en vivo para título y descripción
-- Validación de tamaño de imagen antes de subir
-- Mensajes de error detallados y contextuales
-- Validación de roles y permisos
-
-### 🎨 **Diseño Profesional**
-
-- Interfaz moderna y responsive con Tailwind CSS
-- Modo oscuro elegante
-- Animaciones y transiciones suaves
-- Alertas visuales con SweetAlert2
-- Páginas de error personalizadas con iconos
-- Navegación intuitiva
-- Cards de posts con hover effects
-
----
 
 ## 🚀 Instalación
 
-### Requisitos Previos
+### 1. Instalar XAMPP
 
-- **PHP 7.4+** con extensión PDO
-- **MySQL 8.0+** o MariaDB
-- **Apache** con mod_rewrite habilitado
-- **XAMPP, WAMP, MAMP** o servidor similar (recomendado)
+1. Instalar XAMPP en tu sistema (por defecto se instala en `C:\xampp`)
 
-### Pasos de Instalación
+### 2. Copiar el proyecto en htdocs
 
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/Luis-matador/Personal-Blog.git
-   cd Personal-Blog
-   ```
+1. Descargar o clonar este repositorio
+2. Copiar la carpeta `Personal-Blog` dentro de la carpeta `htdocs` de XAMPP:
 
-2. **Configurar la base de datos**
-   - Crear una base de datos MySQL:
-     ```sql
-     CREATE DATABASE personal_blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-     ```
-   - Importar el esquema:
-     ```bash
-     mysql -u root -p personal_blog < personal_blog.sql
-     ```
+### 3. Iniciar los servicios de XAMPP
 
-3. **Configurar la conexión**
-   
-   Edita `config/database.php` con tus credenciales:
-   ```php
-   define('DB_HOST', 'localhost');
-   define('DB_NAME', 'personal_blog');
-   define('DB_USER', 'tu_usuario');
-   define('DB_PASS', 'tu_contraseña');
-   ```
+1. Abrir el **Panel de Control de XAMPP**
+2. Hacer clic en **Start** en el servicio **Apache**
+3. Hacer clic en **Start** en el servicio **MySQL**
 
-4. **Configurar Apache**
-   - **DocumentRoot**: Apunta a la carpeta `public/`
-   - **Habilitar mod_rewrite**: Para URLs amigables
-   - El archivo `.htaccess` ya está incluido
+### 4. Crear la base de datos
 
-5. **Permisos de directorios**
-   ```bash
-   chmod -R 755 public/uploads/
-   ```
+1. Crear una nueva base de datos llamada `personal_blog`
 
-6. **Acceder a la aplicación**
-   ```
-   http://localhost/Personal-Blog/public/
-   ```
+2. Seleccionar la base de datos `personal_blog` y ejecutar el siguiente SQL en la pestaña "SQL":
 
-### Migración del Sistema de Administrador
+```sql
+-- Tabla de usuarios
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    is_admin TINYINT(1) DEFAULT 0,
+    must_change_password TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-Si ya tienes el proyecto instalado con la versión anterior, consulta `MIGRATION.md` para actualizar el sistema de administrador con roles persistentes.
+-- Tabla de posts
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255),
+    content TEXT NOT NULL,
+    image VARCHAR(255),
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
 
----
+### 5. Configurar credenciales de la base de datos (opcional)
 
-## 🎯 Guía de Uso
+Si has cambiado las credenciales por defecto de MySQL, editar el archivo `config/database.php`:
 
-### Registrarse como Administrador
+```php
+<?php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'personal_blog');
+define('DB_USER', 'root');
+define('DB_PASS', ''); // Por defecto en XAMPP está vacía
+```
 
-1. Ir a "Registrarse"
-2. Completar el formulario
-3. ✅ **Marcar la casilla "¿Eres administrador?"**
-4. Ingresar la contraseña maestra: `admin2024`
-5. Registrarse
+### 6. Acceder a la aplicación
 
-### Panel de Administración
+1. Asegurarse de que **Apache** y **MySQL** están activos en XAMPP
+2. Abrir el navegador
+3. Escribir la siguiente URL:
 
-1. Iniciar sesión con una cuenta de administrador
-2. Click en "Panel Admin" en la barra de navegación
-3. Acceso a:
-   - **Gestión de usuarios**: Crear, editar, eliminar, cambiar contraseñas
-   - **Gestión de posts**: Ver y eliminar todos los posts del blog
-
-### Crear un Post
-
-1. Login o registro
-2. Click "Crear post"
-3. Completa el formulario (el contador te ayuda)
-4. Sube una imagen (opcional, máx 5MB)
-5. Usa el editor WYSIWYG para el contenido
-6. Click "Publicar"
-
-### Editar un Post
-
-1. Abre el post
-2. Click "Editar post" (solo el autor o admin)
-3. Modifica los campos
-4. Cambia la imagen si quieres
-5. Click "Actualizar"
-
-### Eliminar un Post
-
-1. Abre el post
-2. Click "Eliminar post" (solo el autor o admin)
-3. Confirma en el diálogo de SweetAlert2
-4. El post y su imagen se eliminan
-
+```
+http://localhost/Personal-Blog/public/
+```
 ---
 
 ## 📁 Estructura del Proyecto
@@ -200,107 +80,157 @@ Si ya tienes el proyecto instalado con la versión anterior, consulta `MIGRATION
 ```
 Personal-Blog/
 ├── config/
-│   ├── config.php          # Configuración global y funciones URL
-│   └── database.php        # Conexión PDO
+│   ├── config.php          # Configuración general
+│   └── database.php        # Credenciales de BD
 ├── controllers/
-│   ├── AdminController.php # Panel de administración
-│   ├── PostController.php  # CRUD de posts
-│   └── UserController.php  # Autenticación y gestión de usuarios
-├── models/
-│   ├── Post.php           # Modelo Post con consultas optimizadas
-│   └── User.php           # Modelo User con roles
-├── views/
-│   ├── layouts/main.php   # Plantilla principal
-│   ├── admin/
-│   │   ├── index.php      # Dashboard admin
-│   │   ├── users.php      # Gestión de usuarios
-│   │   └── posts.php      # Gestión de posts
-│   ├── posts/
-│   │   ├── index.php      # Listado
-│   │   ├── view.php       # Ver post
-│   │   ├── create.php     # Crear post
-│   │   └── edit.php       # Editar post
-│   ├── users/
-│   │   ├── login.php      # Login
-│   │   └── register.php   # Registro
-│   └── errors/
-│       ├── 404.php        # No encontrado
-│       ├── 403.php        # Acceso denegado
-│       └── 500.php        # Error del servidor
+│   ├── AdminController.php # Controlador del panel admin
+│   ├── PostController.php  # Controlador de posts
+│   └── UserController.php  # Controlador de usuarios
 ├── includes/
-│   ├── Router.php         # Enrutamiento
-│   ├── Database.php       # Singleton de BD
-│   └── functions.php      # Funciones auxiliares
+│   ├── Database.php        # Clase Singleton para conexión PDO
+│   ├── functions.php       # Funciones auxiliares
+│   ├── Router.php          # Sistema de enrutamiento
+│   └── translations.php    # Traducciones
+├── models/
+│   ├── Post.php            # Modelo de Post
+│   └── User.php            # Modelo de Usuario
 ├── public/
-│   ├── index.php          # Punto de entrada único
-│   ├── css/
-│   │   ├── style.css      # Tailwind CSS compilado
-│   │   └── quill-custom.css # Estilos del editor
-│   ├── js/
-│   │   ├── alerts.js      # SweetAlert2
-│   │   ├── validation.js  # Validaciones JS
-│   │   └── quill-init.js  # Inicialización de Quill
-│   └── uploads/           # Imágenes de posts
-├── migration_add_admin.sql # Script de migración de roles
-├── MIGRATION.md           # Guía de migración
-├── personal_blog.sql      # Esquema BD completo
-└── README.md              # Este archivo
+│   ├── index.php           # Punto de entrada único
+│   ├── css/                # Estilos CSS
+│   ├── js/                 # JavaScript (validaciones)
+│   └── uploads/            # Imágenes subidas
+├── views/
+│   ├── admin/              # Vistas del panel admin
+│   ├── errors/             # Páginas de error (403, 404, 500)
+│   ├── layouts/            # Plantilla principal
+│   ├── posts/              # Vistas de posts (CRUD)
+│   └── users/              # Vistas de autenticación
+└── README.md
 ```
 
 ---
 
-## 🛠️ Tecnologías
+## 🏗️ Arquitectura MVC
 
-- **Backend**: PHP 7.4+, MySQL, PDO
-- **Frontend**: HTML5, Tailwind CSS, JavaScript ES6
-- **Editor**: Quill.js (WYSIWYG)
-- **Alertas**: SweetAlert2
-- **Seguridad**: Bcrypt, prepared statements, validación dual
-- **Arquitectura**: MVC puro sin frameworks
+### Flujo de una petición
+
+```
+Usuario → public/index.php → Router → Controller → Model → View
+```
+
+1. **Router** (`includes/Router.php`): Analiza la URL y dirige al controlador correcto
+2. **Controller** (`controllers/`): Procesa la lógica de negocio
+3. **Model** (`models/`): Interactúa con la base de datos mediante PDO
+4. **View** (`views/`): Renderiza la respuesta HTML
+
+### Patrón Singleton - Database
+
+La clase `Database` implementa el patrón Singleton para mantener una única conexión PDO:
+
+```php
+class Database {
+    private static $instance = null;
+    private $connection;
+    
+    private function __construct() { /* conexión PDO */ }
+    
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    public function getConnection() {
+        return $this->connection;
+    }
+}
+```
+
+---
+
+## ✨ Funcionalidades
+
+### 🔐 Autenticación y Sesiones
+
+- Registro de usuarios con validación completa
+- Login con `password_hash()` y `password_verify()`
+- Sesiones seguras con `$_SESSION`
+- Roles: Usuario normal y Administrador
+- Contraseña maestra para registro de admins: `admin2024`
+
+### 📰 Gestión de Posts (CRUD)
+
+- **Crear**: Formulario con editor WYSIWYG (Quill.js)
+- **Leer**: Listado paginado y vista individual
+- **Actualizar**: Edición con permisos (dueño o admin)
+- **Eliminar**: Con confirmación SweetAlert2 y eliminación de imagen
+
+### 🖼️ Subida de Imágenes
+
+- Validación de tipo MIME real (jpg, png, gif, webp)
+- Validación de extensión de archivo
+- Validación de tamaño máximo (10MB)
+- Redimensionado automático (máx. 1200px ancho)
+- Compresión de imágenes con GD
+- Nombres seguros con `uniqid()`
+
+### 👑 Panel de Administración
+
+- Gestión de usuarios (CRUD completo)
+- Gestión de todos los posts
+- Cambio de contraseñas de usuarios
+- Eliminación en cascada (usuario → posts)
+
+### ✅ Validación Dual
+
+- **Cliente (JavaScript)**: Validación en tiempo real
+- **Servidor (PHP)**: Validación completa con `trim()`, `filter_var()`, `htmlspecialchars()`
 
 ---
 
 ## 🔒 Seguridad
 
-✅ Consultas preparadas (PDO) contra SQL Injection  
-✅ Contraseñas hasheadas (bcrypt)  
-✅ Validación dual (cliente + servidor)  
-✅ Sanitización de inputs con `htmlspecialchars()`  
-✅ Validación de tipos de archivo  
-✅ Nombres de archivo seguros con `uniqid()`  
-✅ Verificación de autoría y roles  
-✅ Protección de rutas con middleware  
-✅ Sesiones centralizadas en `index.php`  
+### Protección SQL Injection
+
+Todas las consultas usan **prepared statements**:
+
+```php
+$stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->execute([$email]);
+```
+
+### Protección XSS
+
+Uso de `htmlspecialchars()` en todas las salidas:
+
+```php
+<?= htmlspecialchars($post->title) ?>
+```
+
+### Contraseñas Seguras
+
+```php
+// Hashear al guardar
+password_hash($password, PASSWORD_DEFAULT);
+
+// Verificar al autenticar
+password_verify($password, $user->password);
+```
+
+### Validación de Archivos
+
+- Verificación de tipo MIME real con `$_FILES['image']['type']`
+- Validación de extensión del archivo
+- Límite de tamaño (10MB)
+- Nombres sanitizados con `uniqid()`
+- Movimiento controlado con `move_uploaded_file()`
+
+### Gestión de Sesiones
+
+- `session_start()` centralizado en `public/index.php`
+- Verificación de sesión en rutas protegidas
+- Roles verificados en `$_SESSION['is_admin']`
 
 ---
 
-## 💡 Código Optimizado
-
-- ✅ Eliminación de código duplicado
-- ✅ Editor Quill centralizado (CSS + JS)
-- ✅ Consultas SQL optimizadas con índices
-- ✅ Includes centralizados en controladores
-- ✅ Validaciones JavaScript consolidadas
-- ✅ Sin código de depuración (error_log removidos)
-- ✅ Session_start() centralizado en index.php
-
----
-
-## 👤 Autor
-
-**Luis Matador**  
-GitHub: [@Luis-matador](https://github.com/Luis-matador)
-
----
-
-## 🙏 Agradecimientos
-
-- [Tailwind CSS](https://tailwindcss.com/)
-- [SweetAlert2](https://sweetalert2.github.io/)
-- [Quill.js](https://quilljs.com/)
-
----
-
-**¡Proyecto completado y listo para usar!** 🎉
-
-Si te ha sido útil, deja una ⭐ en GitHub.

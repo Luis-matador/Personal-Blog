@@ -1,8 +1,5 @@
 <?php
-/**
- * Vista para mostrar un post individual
- * Muestra el título, contenido y fecha de publicación
- */
+// Vista de post individual
 ?>
 <div class="max-w-3xl mx-auto px-4 py-8">
     <!-- Botón volver arriba -->

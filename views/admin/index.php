@@ -1,8 +1,5 @@
 <?php
-/**
- * Vista principal del panel de administración
- * Muestra las opciones de gestión
- */
+// Panel de administración
 ?>
 <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Encabezado -->

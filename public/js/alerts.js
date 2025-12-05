@@ -9,9 +9,9 @@ function showAppAlert(type, message) {
     timer: 2500,
     timerProgressBar: true,
     showConfirmButton: false,
-    background: '#1a202c', // bg-gray-900
-    color: '#f1f5f9', // text-gray-100
-    iconColor: type === 'success' ? '#22c55e' : '#ef4444', // verde o rojo Tailwind
+    background: '#1a202c',
+    color: '#f1f5f9',
+    iconColor: type === 'success' ? '#22c55e' : '#ef4444',
     customClass: {
       popup: 'rounded-lg shadow-lg',
       title: 'font-bold',

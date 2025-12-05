@@ -1,7 +1,5 @@
 <?php
-/**
- * Vista de gestión de usuarios del panel de administración
- */
+// Gestión de usuarios
 ?>
 <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Encabezado -->

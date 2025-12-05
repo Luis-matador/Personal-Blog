@@ -10,7 +10,6 @@ class PostController
         try {
             require_once __DIR__ . '/../models/Post.php';
             
-            // Paginación
             $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
             $perPage = 6;
             $posts = Post::getPaginated($page, $perPage);
@@ -87,7 +86,6 @@ class PostController
             $errors[] = "El contenido es obligatorio.";
         }
 
-        // Validación y procesamiento de imagen
         $imagePath = null;
         if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
             if (validateImage($_FILES['image'], $errors)) {
@@ -158,7 +156,6 @@ class PostController
         require_once __DIR__ . '/../models/Post.php';
         $post = Post::getById($id);
         
-        // Verificar si el usuario es admin o dueño del post
         $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
         
         if (!$post || (!$isAdmin && $post->user_id != $_SESSION['user_id'])) {
@@ -173,7 +170,6 @@ class PostController
         $errors = [];
         $old = ['title' => $title, 'descripcion' => $descripcion, 'content' => $content];
 
-        // Validaciones
         if (empty($title)) {
             $errors[] = "El título es obligatorio.";
         } elseif (mb_strlen($title) > 30) {
@@ -188,8 +184,7 @@ class PostController
             $errors[] = "El contenido es obligatorio.";
         }
 
-        // Validación y procesamiento de imagen
-        $imagePath = $post->image; // Mantener la imagen actual por defecto
+        $imagePath = $post->image;
         if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
             if (validateImage($_FILES['image'], $errors)) {
                 $imagePath = uploadImage($_FILES['image'], $post->image);
@@ -213,7 +208,6 @@ class PostController
         if ($result) {
             flashMessage('success', 'Post actualizado correctamente.');
             
-            // Redirigir según si es admin o no
             if ($isAdmin) {
                 header('Location: ' . url('admin/posts'));
             } else {
@@ -241,7 +235,6 @@ class PostController
             exit;
         }
         
-        // Eliminar imagen física si existe
         if (!empty($post->image)) {
             $imagePath = __DIR__ . '/../public' . $post->image;
             if (file_exists($imagePath)) {
@@ -294,7 +287,6 @@ class PostController
             return;
         }
 
-        // Eliminar imagen si existe
         if (!empty($post->image)) {
             $imagePath = __DIR__ . '/../public' . $post->image;
             if (file_exists($imagePath)) {
@@ -311,13 +303,9 @@ class PostController
         redirect(url('admin/posts'));
     }
 
-    /**
-     * Maneja errores de forma centralizada
-     * @param Exception $e Excepción capturada
-     */
+    // Manejar errores
     private function handleError($e)
     {
-        // Mostrar página de error 500
         http_response_code(500);
         $errorMessage = ini_get('display_errors') ? $e->getMessage() : '';
         require_once __DIR__ . '/../config/config.php';

@@ -1,13 +1,5 @@
 <?php
-/**
- * Controlador para gestionar usuarios y autenticación
- * Métodos:
- * - login(): mostrar formulario de login
- * - authenticate(): procesar login
- * - register(): mostrar formulario de registro
- * - store(): guardar un nuevo usuario
- * - logout(): cerrar sesión
- */
+// Controlador de usuarios y autenticación
 
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -23,17 +15,14 @@ class UserController
         include __DIR__ . '/../views/layouts/main.php';
     }
 
-    // Procesa el formulario de login
     public function authenticate()
     {
         try {
-            // Recoge datos del formulario
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
             $errors = [];
             $old = ['email' => $email];
 
-            // Validación básica
             if (empty($email)) {
                 $errors[] = "El email es obligatorio.";
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -43,22 +32,18 @@ class UserController
                 $errors[] = "La contraseña es obligatoria.";
             }
 
-            // Si hay errores, vuelve a mostrar el formulario con mensajes
             if ($errors) {
                 return $this->login($errors, $old);
             }
 
-            // Autenticación
             require_once __DIR__ . '/../models/User.php';
             $user = User::authenticate($email, $password);
 
             if ($user) {
-                // Verificar si debe cambiar contraseña
                 if ($user->must_change_password) {
                     $_SESSION['temp_user_id'] = $user->id;
                     $_SESSION['temp_username'] = $user->username;
                     $_SESSION['must_change_password'] = true;
-                    // Retornar a login con flag especial
                     return $this->login([], $old, true);
                 }
                 
@@ -114,7 +99,6 @@ class UserController
             $errors[] = "Las contraseñas no coinciden.";
         }
 
-        // Validar contraseña de administrador si se marcó el checkbox
         if ($is_admin) {
             require_once __DIR__ . '/../models/User.php';
             if (!User::verifyAdminPassword($admin_password)) {
@@ -122,12 +106,10 @@ class UserController
             }
         }
 
-        // Si hay errores, vuelve a mostrar el formulario con mensajes
         if ($errors) {
             return $this->register($errors, $old);
         }
 
-        // Crear usuario
         require_once __DIR__ . '/../models/User.php';
         $user = User::getByEmail($email);
         if ($user) {
@@ -164,7 +146,6 @@ class UserController
             $confirmPassword = $_POST['confirm_password'] ?? '';
             $errors = [];
 
-            // Validaciones
             if (empty($newPassword)) {
                 $errors[] = "La nueva contraseña es obligatoria.";
             } elseif (strlen($newPassword) < 6) {
@@ -180,20 +161,17 @@ class UserController
                 return;
             }
 
-            // Actualizar contraseña
             require_once __DIR__ . '/../models/User.php';
             $userId = $_SESSION['temp_user_id'];
             $result = User::changePasswordFirstTime($userId, $newPassword);
 
             if ($result) {
-                // Limpiar sesiones temporales y establecer sesión real
                 $_SESSION['user_id'] = $_SESSION['temp_user_id'];
                 $_SESSION['username'] = $_SESSION['temp_username'];
                 unset($_SESSION['temp_user_id']);
                 unset($_SESSION['temp_username']);
                 unset($_SESSION['must_change_password']);
 
-                // Cargar datos completos del usuario
                 $user = User::getById($_SESSION['user_id']);
                 $_SESSION['is_admin'] = $user->is_admin;
 
@@ -359,13 +337,9 @@ class UserController
         redirect(url('admin/users'));
     }
 
-    /**
-     * Maneja errores de forma centralizada
-     * @param Exception $e Excepción capturada
-     */
+    // Manejar errores
     private function handleError($e)
     {
-        // Mostrar página de error 500
         http_response_code(500);
         $errorMessage = ini_get('display_errors') ? $e->getMessage() : '';
         require_once __DIR__ . '/../config/config.php';

@@ -1,17 +1,10 @@
 <?php
-/**
- * Clase para gestionar la conexión a la base de datos
- * Implementa el patrón Singleton para mantener una única conexión
- * Proporciona métodos para ejecutar consultas y obtener resultados
- */
+// Conexión a BD con patrón Singleton
 class Database
 {
     private static $instance = null;
     private $connection;
 
-    /**
-     * Constructor privado para evitar instanciación directa
-     */
     private function __construct()
     {
         require_once __DIR__ . '/../config/database.php';
@@ -22,7 +15,6 @@ class Database
                 DB_USER,
                 DB_PASS
             );
-            // Opciones recomendadas para PDO
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -30,23 +22,14 @@ class Database
         }
     }
 
-    /**
-     * Evitar clonación del objeto
-     */
     private function __clone() {}
 
-    /**
-     * Evitar deserialización
-     */
     public function __wakeup()
     {
         throw new Exception("Cannot unserialize singleton");
     }
 
-    /**
-     * Obtener la única instancia de la clase
-     * @return Database
-     */
+    // Obtener instancia única
     public static function getInstance()
     {
         if (self::$instance === null) {
@@ -55,10 +38,7 @@ class Database
         return self::$instance;
     }
 
-    /**
-     * Obtener la conexión PDO
-     * @return PDO
-     */
+    // Obtener conexión PDO
     public function getConnection()
     {
         return $this->connection;

@@ -1,25 +1,17 @@
 <?php
-/**
- * Controlador para gestionar el panel de administración
- * Métodos:
- * - index(): mostrar panel principal de administración
- * - isAdmin(): verificar que el usuario tenga rol de administrador
- */
+// Controlador del panel de administración
 
 require_once __DIR__ . '/../includes/functions.php';
 
 class AdminController
 {
-    // Verifica si el usuario es administrador
     private function isAdmin()
     {
-        // Verificar si el usuario está autenticado
         if (!isset($_SESSION['user_id'])) {
             header('Location: ' . url('login'));
             exit;
         }
 
-        // Verificar si el usuario tiene rol de admin
         if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
             http_response_code(403);
             $pageTitle = 'Acceso Denegado';
@@ -76,10 +68,8 @@ class AdminController
         include __DIR__ . '/../views/layouts/main.php';
     }
 
-    // Cerrar sesión de admin (mantiene la sesión de usuario)
     public function logout()
     {
-        // Ahora solo cierra la sesión completamente
         session_unset();
         session_destroy();
         header('Location: ' . url());

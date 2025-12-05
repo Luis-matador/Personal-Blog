@@ -1,14 +1,7 @@
 <?php
-/**
- * Funciones auxiliares para usar en toda la aplicación
- * Por ejemplo:
- * - flashMessage($type, $message): guardar un mensaje flash en sesión
- * - getFlashMessage($type): obtener y eliminar un mensaje flash
- * - redirect($url): redirigir a otra página
- * - escape($string): escapar HTML para seguridad
- * - isLoggedIn(): verificar si el usuario está autenticado
- */
+// Funciones auxiliares
 
+// Guardar mensaje flash en sesión
 function flashMessage($type, $message) {
 	if (session_status() === PHP_SESSION_NONE) session_start();
 	$_SESSION['flash'][$type] = $message;
@@ -29,15 +22,8 @@ function redirect($url) {
 	exit;
 }
 
-/**
- * Valida una imagen subida
- * @param array $file Archivo de $_FILES
- * @param array &$errors Array de errores (se modifica por referencia)
- * @param int $maxSize Tamaño máximo en bytes (por defecto 10MB)
- * @return bool True si es válida, false si hay errores
- */
+// Validar imagen subida
 function validateImage($file, &$errors, $maxSize = 10485760) {
-	// 10MB = 10 * 1024 * 1024 = 10485760 bytes
 	
 	// Validar que se subió un archivo
 	if ($file['error'] === UPLOAD_ERR_NO_FILE) {
@@ -75,12 +61,7 @@ function validateImage($file, &$errors, $maxSize = 10485760) {
 	return true;
 }
 
-/**
- * Procesa y guarda una imagen subida
- * @param array $file Archivo de $_FILES
- * @param string|null $oldImage Ruta de imagen anterior (para eliminar)
- * @return string|null Ruta de la imagen guardada o null si falla
- */
+// Subir y guardar imagen
 function uploadImage($file, $oldImage = null) {
 	$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 	$safeName = uniqid('img_') . '.' . $ext;
@@ -114,12 +95,7 @@ function uploadImage($file, $oldImage = null) {
 	return null;
 }
 
-/**
- * Redimensiona una imagen manteniendo la proporción
- * @param string $filePath Ruta completa del archivo
- * @param int $maxWidth Ancho máximo (por defecto 1200px)
- * @return bool True si tiene éxito, false si falla
- */
+// Redimensionar imagen
 function resizeImage($filePath, $maxWidth = 1200) {
 	// Verificar que GD esté disponible
 	if (!extension_loaded('gd')) {
@@ -204,12 +180,7 @@ function resizeImage($filePath, $maxWidth = 1200) {
 	return $result;
 }
 
-/**
- * Comprime una imagen sin redimensionar
- * @param string $filePath Ruta completa del archivo
- * @param int $type Tipo de imagen (IMAGETYPE_*)
- * @return bool True si tiene éxito, false si falla
- */
+// Comprimir imagen
 function compressImage($filePath, $type) {
 	switch ($type) {
 		case IMAGETYPE_JPEG:

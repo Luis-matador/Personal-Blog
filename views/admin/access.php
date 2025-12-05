@@ -1,8 +1,5 @@
 <?php
-/**
- * Vista de acceso al panel de administración
- * Solicita clave de acceso
- */
+// Acceso al panel de admin
 ?>
 <div class="flex items-center justify-center min-h-[60vh]">
   <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-md p-8">

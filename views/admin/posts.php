@@ -1,7 +1,5 @@
 <?php
-/**
- * Vista de gestión de posts del panel de administración
- */
+// Gestión de posts
 ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Encabezado -->

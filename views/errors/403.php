@@ -1,8 +1,5 @@
 <?php
-/**
- * Vista de error 403 - Acceso Denegado
- * Se muestra cuando un usuario intenta acceder a un recurso sin permisos
- */
+// Error 403
 ?>
 <div class="flex items-center justify-center min-h-[60vh]">
     <div class="text-center">

@@ -37,10 +37,7 @@ class Post
         return $posts;
     }
 
-    /**
-     * Obtiene todos los posts con información del autor
-     * @return array
-     */
+    // Obtener posts con autor
     public static function allWithAuthors()
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -58,12 +55,7 @@ class Post
         return $posts;
     }
 
-    /**
-     * Obtiene posts paginados con información del autor
-     * @param int $page Número de página (empieza en 1)
-     * @param int $perPage Posts por página
-     * @return array
-     */
+    // Obtener posts paginados
     public static function getPaginated($page = 1, $perPage = 6)
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -88,10 +80,7 @@ class Post
         return $posts;
     }
 
-    /**
-     * Cuenta el total de posts
-     * @return int
-     */
+    // Contar total de posts
     public static function count()
     {
         require_once __DIR__ . '/../includes/Database.php';
@@ -101,11 +90,7 @@ class Post
         return (int)$result['total'];
     }
 
-    /**
-     * Busca posts por título o descripción con información del autor
-     * @param string $query Término de búsqueda
-     * @return array
-     */
+    // Buscar posts
     public static function search($query)
     {
         require_once __DIR__ . '/../includes/Database.php';

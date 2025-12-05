@@ -1,10 +1,6 @@
 <?php
-/**
- * Configuración global de la aplicación
- * Define constantes y configuraciones generales
- */
+// Configuración global
 
-// Detectar automáticamente la URL base
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $baseUrl = rtrim($scriptName, '/');
 define('BASE_URL', $baseUrl);

@@ -1,7 +1,5 @@
 <?php
-/**
- * Vista para mostrar resultados de búsqueda
- */
+// Resultados de búsqueda
 ?>
 <div class="max-w-4xl mx-auto px-4">
     <h1 class="text-4xl font-extrabold mb-4 text-center">Resultados de búsqueda</h1>
