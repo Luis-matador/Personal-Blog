@@ -224,8 +224,8 @@ class UserController
             return;
         }
 
-        // Crear con contraseña por defecto y flag para forzar cambio
-        $defaultPassword = 'password123';
+        // Contraseña temporal aleatoria; el usuario deberá cambiarla en su primer login
+        $defaultPassword = bin2hex(random_bytes(6));
         $newUser = User::create([
             'username' => $username,
             'email' => $email,
@@ -234,7 +234,7 @@ class UserController
         ]);
 
         if ($newUser) {
-            $_SESSION['flash_success'] = "Usuario creado correctamente. Contraseña por defecto: $defaultPassword (deberá cambiarla en el primer login)";
+            $_SESSION['flash_success'] = "Usuario creado correctamente. Contraseña temporal: $defaultPassword (deberá cambiarla en el primer login)";
         } else {
             $_SESSION['flash_error'] = "Error al crear el usuario.";
         }
