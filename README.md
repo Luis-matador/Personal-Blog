@@ -157,7 +157,7 @@ class Database {
 - Login con `password_hash()` y `password_verify()`
 - Sesiones seguras con `$_SESSION`
 - Roles: Usuario normal y Administrador
-- Contraseña maestra para registro de admins: `admin2024`
+- Código para registrarse como administrador configurable con la variable de entorno `BLOG_ADMIN_CODE` (si no se define, nadie puede registrarse como admin)
 
 ### 📰 Gestión de Posts (CRUD)
 
