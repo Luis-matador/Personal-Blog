@@ -10,9 +10,6 @@ class User
     public $must_change_password;
     public $created_at;
 
-    // Contraseña maestra para crear administradores
-    private const ADMIN_MASTER_PASSWORD = 'admin2024';
-
     public function __construct($data = [])
     {
         $this->id         = $data['id'] ?? null;
@@ -24,10 +21,15 @@ class User
         $this->created_at = $data['created_at'] ?? null;
     }
 
-    // Verifica contraseña maestra de admin
+    // Verifica el código para registrarse como administrador.
+    // Se lee de la variable de entorno BLOG_ADMIN_CODE; si no está definida, nadie puede registrarse como admin.
     public static function verifyAdminPassword($password)
     {
-        return $password === self::ADMIN_MASTER_PASSWORD;
+        $codigo = getenv('BLOG_ADMIN_CODE');
+        if ($codigo === false || $codigo === '') {
+            return false;
+        }
+        return hash_equals($codigo, (string)$password);
     }
 
     public static function getById($id)
